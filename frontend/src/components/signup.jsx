@@ -24,7 +24,7 @@ const Signup = () => {
 
         const signupData = {firstName, lastName, address, phone, email, password};
         try {
-            const response = await fetch("http://localhost:8080/admin/signup", {
+            const response = await fetch("http://localhost:8080/register", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(signupData),

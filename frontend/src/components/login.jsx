@@ -12,7 +12,7 @@ const Login = () => {
         const loginData = { email, password };
         let loginUrl = email.endsWith("@admin.chello.com")
             ? "http://localhost:8080/admin/login"
-            : "http://localhost:8080/login/log";
+            : "http://localhost:8080/login";
         try {
             const response = await fetch(loginUrl, {
                 method: "POST",
