@@ -23,11 +23,17 @@ public class AuthenticationService {
   private final AuthenticationManager authenticationManager;
 
   public AuthenticationResponse register(RegisterRequest request) {
+    var username = request.getUsername();
+    var email = request.getEmail();
+
+    var role = email.toLowerCase().endsWith("@chello.com") ? User.Role.ADMIN : User.Role.USER;
+
     var user = User.builder()
         .username(request.getUsername())
         .email(request.getEmail())
+        .address(request.getAddress())
         .password(passwordEncoder.encode(request.getPassword()))
-        .role(request.getRole())
+        .role(role)
         .phoneNumber(request.getPhoneNumber())
         .build();
     

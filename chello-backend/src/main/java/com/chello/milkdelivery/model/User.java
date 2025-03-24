@@ -33,8 +33,7 @@ public class User implements UserDetails {
 
     public enum Role {
         ADMIN,
-        INSTRUCTOR,
-        STUDENT
+        USER
     }
 
     @Id
@@ -58,6 +57,9 @@ public class User implements UserDetails {
     @Column(name = "phone_number", nullable = true, unique = true, length = 13)
     private String phoneNumber;
 
+    @Column(name = "address", nullable = false, unique = false, length = 225)
+    private String address;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
@@ -71,6 +73,10 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return username;
+    }
+
+    public String getAddress(){
+        return address;
     }
 
     @Override
