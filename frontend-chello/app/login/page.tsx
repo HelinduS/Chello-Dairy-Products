@@ -44,7 +44,7 @@ export default function LoginPage() {
       localStorage.setItem("token", data.token)
 
       // Redirect to dashboard or home page
-      router.push("/dashboard")
+      router.push("/customerdas")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed. Please try again.")
     } finally {
