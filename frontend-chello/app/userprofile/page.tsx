@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 
 export default function UserProfileFullDashboard() {
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [profilePic, setProfilePic] = useState("https://via.placeholder.com/100");
   const [name, setName] = useState("John Doe");
   const [email, setEmail] = useState("john@example.com");
@@ -20,8 +20,6 @@ export default function UserProfileFullDashboard() {
   const handleSave = () => {
     setEditing(false);
   };
-
-  const fileInutRef = useRef<HTMLInputElement>(null);
 
 const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   const file = event.target.files?.[0];

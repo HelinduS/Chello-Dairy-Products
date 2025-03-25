@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Truck, X, RefreshCw } from "lucide-react";
 
 export default function Page() {
+  const router = useRouter();
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [address, setAddress] = useState("");
   const [availability, setAvailability] = useState("9am - 5pm");
@@ -22,13 +24,20 @@ export default function Page() {
   };
 
   return (
-    <div className="grid gap-6 p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold">Customer Dashboard</h1>
-
+    <div className="grid gap-6  max-w-4xl mx-auto">
+     
+      <div className="flex justify-between items-center mt-6">
+        <h1 className="text-4xl font-bold">Customer Dashboard</h1>       
+        <Button  onClick={() => router.push("/userprofile")}>
+          Go to Profile
+        </Button>
+      </div>
+    
       <Card>
-        <CardContent className="p-4 flex flex-col gap-4">
+        <CardContent className="p-6 flex flex-col gap-4">
           <div className="flex justify-between items-center">
-            <span className="font-medium">Delivery Method</span>
+            <span className="text-2xl font-medium">Delivery Method</span>
+           
           </div>
           <div className="flex gap-6">
             <label className="flex items-center gap-2">
@@ -104,7 +113,7 @@ export default function Page() {
             <span>{deliveryStatus}</span>
           </div>
           {!orderCancelled && (
-            <div className="flex gap-4">
+            <div className="flex gap-2">
               <Button variant="destructive" onClick={cancelOrder}>
                 <X className="mr-2 h-4 w-4" /> Cancel Order
               </Button>

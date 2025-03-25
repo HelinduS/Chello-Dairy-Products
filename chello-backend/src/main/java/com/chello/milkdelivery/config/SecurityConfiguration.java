@@ -21,6 +21,7 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
+        @SuppressWarnings("unused")
         private static final String[] WHITE_LIST_URL = { "/api/auth/**" };
         private final JwtAuthenticationFilter jwtAuthFilter;
         private final AuthenticationProvider authenticationProvider;
