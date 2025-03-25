@@ -17,4 +17,5 @@ public class UserService {
         user.setPhoneNumber(updatedUser.getPhoneNumber());
         user.setProfileImage(updatedUser.getProfileImage());
         return userRepository.save(user);
+    }
 }
