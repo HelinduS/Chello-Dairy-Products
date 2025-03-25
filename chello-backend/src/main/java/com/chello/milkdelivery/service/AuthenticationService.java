@@ -4,6 +4,7 @@ import com.chello.milkdelivery.dto.AuthenticationRequest;
 import com.chello.milkdelivery.dto.AuthenticationResponse;
 import com.chello.milkdelivery.dto.RegisterRequest;
 import com.chello.milkdelivery.model.User;
+import com.chello.milkdelivery.dto.UpdateUserDetailsRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -85,16 +86,35 @@ public class AuthenticationService {
         .build();
   }
 
+  //method to check whether the user exists
   public boolean userExists(Long id, String username, User.Role role) {
         return repository.existsByIdAndUsernameAndRole(id, username, role);
   }
 
+  //method to update password
   public void updatePassword(String username, String password) {
     var user = repository.findByUsername(username);
     user.ifPresent(u -> {
       u.setPassword(passwordEncoder.encode(password));
       repository.save(u);
     });
+  }
+
+  public boolean updateUserDetails(UpdateUserDetailsRequest request) {
+    User user = repository.findByUsername(request.getUsername())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // Update fields if they are not null or empty
+    if (request.getPhoneNumber() != null && !request.getPhoneNumber().isEmpty()) {
+      user.setPhoneNumber(request.getPhoneNumber());
+    }
+
+    if (request.getAddress() != null && !request.getAddress().isEmpty()) {
+      user.setAddress(request.getAddress());
+    }
+
+    repository.save(user);
+    return true;
   }
 
 
