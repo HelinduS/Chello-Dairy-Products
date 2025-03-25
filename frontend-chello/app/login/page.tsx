@@ -116,7 +116,7 @@ export default function LoginPage() {
       <div className="hidden bg-muted md:block md:w-1/2">
         <div className="relative h-full w-full">
           <Image
-            src="/login-background.jpg"
+            src="/images/login-background.jpg"
             alt="Login illustration"
             fill
             className="object-cover"
