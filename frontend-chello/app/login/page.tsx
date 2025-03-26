@@ -26,7 +26,7 @@ export default function LoginPage() {
     setError("")
 
     try {
-      const response = await fetch("/api/auth/authenticate", {
+      const response = await fetch("http://localhost:8080/api/auth/authenticate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export default function LoginPage() {
       }
 
       // Store token or user data in localStorage or cookies
-      localStorage.setItem("token", data.token)
+      localStorage.setItem("token", data.access_token)
 
       // Redirect to dashboard or home page
       router.push("/dashboard")

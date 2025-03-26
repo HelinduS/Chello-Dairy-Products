@@ -18,6 +18,8 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
+    address: "",
+    phoneNumber: "",
     password: "",
     confirmPassword: "",
   })
@@ -45,7 +47,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch("http://localhost:8080/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,6 +55,8 @@ export default function RegisterPage() {
         body: JSON.stringify({
           username: formData.username,
           email: formData.email,
+          address: formData.address,
+          phoneNumber: formData.phoneNumber,
           password: formData.password,
         }),
       })
@@ -111,6 +115,30 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   required
                   placeholder="Enter your email"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address">Address</Label>
+                <Input
+                  id="address"
+                  name="address"
+                  type="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your address"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  type="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your Phone Number"
                 />
               </div>
               <div className="space-y-2">
