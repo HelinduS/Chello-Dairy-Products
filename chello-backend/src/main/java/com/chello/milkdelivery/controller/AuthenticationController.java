@@ -44,11 +44,6 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/updateDetails")
-    public ResponseEntity<String> updateUserDetails(@RequestBody UpdateUserDetailsRequest request) {
-        boolean isUpdated = service.updateUserDetails(request);
-        return isUpdated ? ResponseEntity.ok("User details updated successfully")
-                : ResponseEntity.badRequest().body("User details update failed");
-    }
+    
 
 }

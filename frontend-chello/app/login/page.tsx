@@ -54,7 +54,6 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Left side - Login form */}
       <div className="flex w-full items-center justify-center p-8 md:w-1/2">
         <Card className="w-full max-w-md border-none shadow-none">
           <CardHeader className="space-y-1 p-0 pb-6">

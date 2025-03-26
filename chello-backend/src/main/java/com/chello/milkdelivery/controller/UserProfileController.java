@@ -12,7 +12,7 @@ public class UserProfileController {
     @Autowired
     private UserService userService;
 
-    @PutMapping("/editProfile")
+    @PutMapping("/editProfile/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         return ResponseEntity.ok(userService.updateUser(id, updatedUser));
     }

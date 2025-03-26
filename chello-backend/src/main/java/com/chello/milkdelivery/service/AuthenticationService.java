@@ -100,22 +100,5 @@ public class AuthenticationService {
     });
   }
 
-  public boolean updateUserDetails(UpdateUserDetailsRequest request) {
-    User user = repository.findByUsername(request.getUsername())
-            .orElseThrow(() -> new RuntimeException("User not found"));
-
-    // Update fields if they are not null or empty
-    if (request.getPhoneNumber() != null && !request.getPhoneNumber().isEmpty()) {
-      user.setPhoneNumber(request.getPhoneNumber());
-    }
-
-    if (request.getAddress() != null && !request.getAddress().isEmpty()) {
-      user.setAddress(request.getAddress());
-    }
-
-    repository.save(user);
-    return true;
-  }
-
 
 }
