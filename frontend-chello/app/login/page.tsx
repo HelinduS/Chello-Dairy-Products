@@ -41,10 +41,10 @@ export default function LoginPage() {
       }
 
       // Store token or user data in localStorage or cookies
-      localStorage.setItem("token", data.token)
+      localStorage.setItem("token",  data.access_token)
 
       // Redirect to dashboard or home page
-      router.push("/customerdas")
+      router.push("/customer-dash")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed. Please try again.")
     } finally {

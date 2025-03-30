@@ -71,24 +71,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md p-6 hidden md:block">
-        <h2 className="text-xl font-bold text-cyan-700 mb-6">Chello Dashboard</h2>
-        <nav className="space-y-4">
-          <a href="/dashboard" className="text-gray-700 hover:text-cyan-700 font-medium">
-            Dashboard
-          </a>
-          <a href="/orders" className="text-gray-700 hover:text-cyan-700 font-medium">
-            Orders
-          </a>
-          <a href="/products" className="text-gray-700 hover:text-cyan-700 font-medium">
-            Products
-          </a>
-          <a href="/account" className="text-gray-700 hover:text-cyan-700 font-medium">
-            My Account
-          </a>
-        </nav>
-      </aside>
+
 
       {/* Main Content */}
       <main className="flex-1 p-6">
@@ -97,20 +80,7 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-cyan-700">Milk Products</h1>
 
           {/* Top Right Buttons */}
-          <div className="space-x-3">
-            <a
-              href="/login"
-              className="px-4 py-2 border border-cyan-700 text-cyan-700 rounded hover:bg-cyan-50 transition"
-            >
-              Login
-            </a>
-            <a
-              href="/register"
-              className="px-4 py-2 bg-cyan-700 text-white rounded hover:bg-cyan-600 transition"
-            >
-              Register
-            </a>
-          </div>
+          
         </div>
 
         {/* Search Bar */}
