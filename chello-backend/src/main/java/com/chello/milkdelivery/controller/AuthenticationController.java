@@ -43,6 +43,16 @@ public class AuthenticationController {
         service.updatePassword(request.getUsername(), request.getPassword());
         return ResponseEntity.ok().build();
     }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Boolean> forgotPassword(
+            @RequestBody ForgotPasswordRequest request) {
+        try {
+            service.handleForgotPassword(request);
+            return ResponseEntity.ok(true);
+        } catch (RuntimeException e) {
+            return ResponseEntity.ok(false);
+        }
+    }
 
     
 
