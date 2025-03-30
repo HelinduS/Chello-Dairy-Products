@@ -101,17 +101,26 @@ export default function Dashboard() {
                 {/* Main Content */}
                 <main className="flex-1 p-8 flex flex-col gap-20">
                     {/* Top Section */}
-                    <div className="flex justify-between items-center mb-6">
-                        <Card className="w-full max-w-md border-none shadow-none">
-                            <CardHeader className="p-0">
-                                <CardTitle className="text-3xl font-bold">Welcome, {user.username}!</CardTitle>
-                                <p>You have successfully logged in to your account.</p>
-                            </CardHeader>
-                        </Card>
-                        <Button variant="default" className="ml-4 text-lg px-10 py-6 hover:bg-blue-600" asChild>
-                            <Link href="/dashboard">+ Purchase</Link>
-                        </Button>
-                    </div>
+                    <div className="flex items-center mb-6">
+            {/* Left Section */}
+            <div className="w-1/2">
+                <Card className="w-full max-w-md border-none shadow-none">
+                    <CardHeader className="p-0">
+                        <CardTitle className="text-3xl font-bold">Welcome, {user.username}!</CardTitle>
+                            <p>You have successfully logged in to your account.</p>
+                         </CardHeader>
+                </Card>
+            </div>
+            {/* Right Section */}
+            <div className="w-1/2 flex justify-center">
+                <Button variant="default" className="text-lg px-10 py-6 hover:bg-blue-600">
+                    <Link href="/dashboard" className="block w-full h-full flex items-center justify-center">
+                    + Purchase
+                    </Link>
+                </Button>
+            </div>
+        </div>
+
                     <div>
                         {/* Bottom Section */}
                         <Card className="w-full max-w-lg p-8 bg-red-300">
