@@ -186,7 +186,7 @@ export default function ProfilePage() {
                             </div>
                         </div>
                         <Button
-                            className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+                            className="w-full mt-6  hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
                             onClick={handleEdit}
                         >
                             Edit Profile
