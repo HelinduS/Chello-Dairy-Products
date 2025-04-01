@@ -4,9 +4,19 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type Driver = {
   id: string;
@@ -26,15 +36,52 @@ type Delivery = {
 };
 
 const mockDrivers: Driver[] = [
-  { id: "1", name: "John Diggle", status: "Available", region: "North", rating: 4.5, completedDeliveries: 120 },
-  { id: "2", name: "Oliver Queen", status: "Busy", region: "East", rating: 4.8, completedDeliveries: 200 },
-  { id: "3", name: "Demian Dark", status: "Available", region: "South", rating: 4.3, completedDeliveries: 95 },
+  {
+    id: "1",
+    name: "John Diggle",
+    status: "Available",
+    region: "North",
+    rating: 4.5,
+    completedDeliveries: 120,
+  },
+  {
+    id: "2",
+    name: "Oliver Queen",
+    status: "Busy",
+    region: "East",
+    rating: 4.8,
+    completedDeliveries: 200,
+  },
+  {
+    id: "3",
+    name: "Demian Dark",
+    status: "Available",
+    region: "South",
+    rating: 4.3,
+    completedDeliveries: 95,
+  },
 ];
 
 const mockDeliveries: Delivery[] = [
-  { id: "d1", customer: "Barry Allen", region: "North", status: "Unassigned" },
-  { id: "d2", customer: "Iris West", region: "South", status: "Unassigned" },
-  { id: "d3", customer: "Cisco Ramon", region: "East", status: "Assigned", assignedDriver: "Oliver Queen" },
+  {
+    id: "d1",
+    customer: "Barry Allen",
+    region: "North",
+    status: "Unassigned",
+  },
+  {
+    id: "d2",
+    customer: "Iris West",
+    region: "South",
+    status: "Unassigned",
+  },
+  {
+    id: "d3",
+    customer: "Cisco Ramon",
+    region: "East",
+    status: "Assigned",
+    assignedDriver: "Oliver Queen",
+  },
 ];
 
 export default function DeliveryDriversDashboard() {
@@ -115,7 +162,10 @@ export default function DeliveryDriversDashboard() {
                       <h3 className="text-lg font-semibold mb-2">Assign a Delivery</h3>
                       <ul className="space-y-2">
                         {deliveries.filter((d) => d.status === "Unassigned").map((delivery) => (
-                          <li key={delivery.id} className="flex justify-between items-center border p-2 rounded-md">
+                          <li
+                            key={delivery.id}
+                            className="flex justify-between items-center border p-2 rounded-md"
+                          >
                             <div>
                               <p className="font-medium">{delivery.customer}</p>
                               <p className="text-sm text-muted-foreground">Region: {delivery.region}</p>
