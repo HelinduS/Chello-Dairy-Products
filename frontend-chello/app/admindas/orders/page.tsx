@@ -1,9 +1,8 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 
 interface Order {
     id: number;
@@ -11,7 +10,7 @@ interface Order {
     status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Canceled";
     driverId?: string;
     orderDate?: string;
-    items: string[];
+    items: string; // JSON string from backend
     total: number;
 }
 
@@ -31,15 +30,26 @@ const OrdersPage = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const [ordersResponse, driversResponse] = await Promise.all([
-                    fetch("/api/orders"),
-                    fetch("/api/drivers")
-                ]);
 
+                const ordersResponse = await fetch("http://localhost:8080/api/orders", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+                if (!ordersResponse.ok) throw new Error(`Failed to fetch orders: ${ordersResponse.status}`);
                 const ordersData = await ordersResponse.json();
+                const parsedOrders = ordersData.map((order: Order) => ({
+                    ...order,
+                    items: JSON.parse(order.items),
+                }));
+
+                const driversResponse = await fetch("http://localhost:8080/api/drivers", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+                if (!driversResponse.ok) throw new Error(`Failed to fetch drivers: ${driversResponse.status}`);
                 const driversData = await driversResponse.json();
 
-                setOrders(ordersData);
+                setOrders(parsedOrders);
                 setDrivers(driversData);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -53,17 +63,14 @@ const OrdersPage = () => {
 
     const updateOrderStatus = async (orderId: number, newStatus: Order["status"]) => {
         try {
-            const response = await fetch(`/api/orders/${orderId}`, {
+            const response = await fetch(`http://localhost:8080/api/orders/${orderId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: newStatus })
+                body: JSON.stringify({ status: newStatus }),
             });
-
-            if (response.ok) {
-                setOrders(orders.map(order =>
-                    order.id === orderId ? { ...order, status: newStatus } : order
-                ));
-            }
+            if (!response.ok) throw new Error("Failed to update status");
+            const updatedOrder = await response.json();
+            setOrders(orders.map(order => (order.id === orderId ? updatedOrder : order)));
         } catch (error) {
             console.error("Error updating status:", error);
         }
@@ -71,30 +78,27 @@ const OrdersPage = () => {
 
     const assignDriver = async (orderId: number, driverId: string) => {
         try {
-            const response = await fetch(`/api/orders/${orderId}/assign-driver`, {
+            const response = await fetch(`http://localhost:8080/api/orders/${orderId}/assign-driver`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ driverId })
+                body: JSON.stringify({ driverId: driverId || null }),
             });
-
-            if (response.ok) {
-                setOrders(orders.map(order =>
-                    order.id === orderId ? { ...order, driverId } : order
-                ));
-            }
+            if (!response.ok) throw new Error("Failed to assign driver");
+            const updatedOrder = await response.json();
+            setOrders(orders.map(order => (order.id === orderId ? updatedOrder : order)));
         } catch (error) {
             console.error("Error assigning driver:", error);
         }
     };
 
-    // Define filtered orders based on the selected filter
     const filteredOrders = filter === "All" ? orders : orders.filter(order => order.status === filter);
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className="w-full p-4 lg:p-6">
             <h1 className="text-3xl font-bold mb-6 text-left">Order Management</h1>
 
-            {/* Filter Controls */}
             <div className="mb-6 flex gap-4">
                 <select
                     value={filter}
@@ -110,7 +114,6 @@ const OrdersPage = () => {
                 </select>
             </div>
 
-            {/* Orders Table */}
             <Card className="p-6">
                 <table className="min-w-full table-auto border-collapse">
                     <thead>
@@ -131,7 +134,7 @@ const OrdersPage = () => {
                             <td className="px-4 py-2">{order.id}</td>
                             <td className="px-4 py-2">{order.customerName}</td>
                             <td className="px-4 py-2">{order.orderDate ? new Date(order.orderDate).toLocaleDateString() : "N/A"}</td>
-                            <td className="px-4 py-2">{order.items.length}</td>
+                            <td className="px-4 py-2">{Array.isArray(order.items) ? order.items.length : "N/A"}</td>
                             <td className="px-4 py-2">${order.total.toFixed(2)}</td>
                             <td className="px-4 py-2">
                                 <select
@@ -153,7 +156,7 @@ const OrdersPage = () => {
                                     disabled={order.status === "Delivered" || order.status === "Canceled"}
                                     className="p-2 border rounded w-[150px]"
                                 >
-                                    <option value="">Assign driver</option>
+                                    <option value="">Not Assigned</option>
                                     {drivers.map((driver) => (
                                         <option key={driver.id} value={driver.id}>
                                             {driver.name} ({driver.status})

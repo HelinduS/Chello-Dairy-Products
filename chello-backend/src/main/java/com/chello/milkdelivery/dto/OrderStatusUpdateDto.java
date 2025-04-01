@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.chello.milkdelivery.dto;
 
 public class OrderStatusUpdateDto {
     private String status;
@@ -12,3 +12,4 @@ public class OrderStatusUpdateDto {
         this.status = status;
     }
 }
+

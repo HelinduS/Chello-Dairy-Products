@@ -1,7 +1,8 @@
-package com.example.demo.repository;
+package com.chello.milkdelivery.repository;
 
-import com.example.demo.model.Order;
+import com.chello.milkdelivery.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
+    List<Order> findByOrderDateBetween(LocalDate startDate, LocalDate endDate);
 }
