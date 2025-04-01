@@ -29,6 +29,12 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.searchInventory(inventoryId));
     }
 
+    //@GetMapping("/low-stock")
+    //public ResponseEntity<List<Inventory>> getLowStockItems() {
+        //List<Inventory> lowStockItems = inventoryService.getLowStockItems();
+        //return ResponseEntity.ok(lowStockItems);
+    //}
+
     @PostMapping("/add")
     public ResponseEntity<String> addInventory(@RequestBody Inventory inventory) {
         return ResponseEntity.ok(inventoryService.addInventory(inventory));
