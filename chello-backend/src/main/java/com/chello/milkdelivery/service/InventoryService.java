@@ -1,7 +1,7 @@
 package com.chello.milkdelivery.service;
 
 import com.chello.milkdelivery.model.Inventory;
-import com.chello.milkdelivery.repository.InventoryRepositary;
+import com.chello.milkdelivery.repository.InventoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +14,19 @@ import java.util.NoSuchElementException;
 @Service
 @Transactional
 public class InventoryService {
-    private InventoryRepositary inventoryRepositary;
+    private InventoryRepository inventoryRepository;
 
     @Autowired
-    public InventoryService(InventoryRepositary inventoryRepositary) {
-        this.inventoryRepositary = inventoryRepositary;
+    public InventoryService(InventoryRepository inventoryRepository) {
+        this.inventoryRepository = inventoryRepository;
     }
 
     public List<Inventory> getAll() {
-        return inventoryRepositary.findAll();
+        return inventoryRepository.findAll();
     }
 
     public Inventory searchInventory(int inventoryId) {
-        Inventory inventory = inventoryRepositary.findByInventoryId(inventoryId);
+        Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
         if (inventory == null) {
             log.error("Searched for a non existing inventory item");
             throw new NoSuchElementException("No inventory found with ID: " + inventoryId);
@@ -36,9 +36,9 @@ public class InventoryService {
     }
 
     public String addInventory(Inventory inventory) {
-        Inventory i = inventoryRepositary.findByInventoryId(inventory.getInventoryId());
+        Inventory i = inventoryRepository.findByInventoryId(inventory.getInventoryId());
         if (i == null) {
-            inventoryRepositary.save(inventory);
+            inventoryRepository.save(inventory);
             log.info("Added new inventory item");
             return "Inventory added successfully";
         }
@@ -48,10 +48,10 @@ public class InventoryService {
 
     public String updateInventory(Inventory inventory, int inventoryId) {
         try {
-            Inventory i = inventoryRepositary.findByInventoryId(inventoryId);
+            Inventory i = inventoryRepository.findByInventoryId(inventoryId);
             if (i != null) {
                 i.setQty(inventory.getQty());
-                inventoryRepositary.save(i);
+                inventoryRepository.save(i);
                 log.info("Updated an inventory item");
                 return "Inventory updated successfully";
             }
@@ -63,11 +63,11 @@ public class InventoryService {
     }
 
     public String deleteInventory(int inventoryId) {
-        Inventory i = inventoryRepositary.findByInventoryId(inventoryId);
+        Inventory i = inventoryRepository.findByInventoryId(inventoryId);
         if (i == null) {
             throw new NoSuchElementException("Inventory not found with ID: " + inventoryId);
         }
-        inventoryRepositary.delete(i);
+        inventoryRepository.delete(i);
         return "Inventory deleted successfully";
     }
 }
