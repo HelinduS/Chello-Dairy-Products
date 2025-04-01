@@ -27,10 +27,11 @@ export default function Page() {
     <div className="grid gap-6  max-w-4xl mx-auto">
      
       <div className="flex justify-between items-center mt-6">
-        <h1 className="text-4xl font-bold">Customer Dashboard</h1>       
-        <Button  onClick={() => router.push("/userprofile")}>
-          Go to Profile
+        <Button  onClick={() => router.push("/customer-dash")}>
+          back
         </Button>
+        <h1 className="text-4xl font-bold ">set deleivery</h1>
+
       </div>
     
       <Card>
