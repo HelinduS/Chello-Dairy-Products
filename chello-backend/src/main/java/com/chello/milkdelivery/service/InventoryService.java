@@ -25,6 +25,13 @@ public class InventoryService {
         return inventoryRepository.findAll();
     }
 
+    //public List<Inventory> getLowStockItems() {
+        //return inventoryRepository.findAll()
+               // .stream()
+               // .filter(inv -> inv.getQty() < LOW_STOCK_THRESHOLD)
+               // .collect(Collectors.toList());
+    //}
+
     public Inventory searchInventory(int inventoryId) {
         Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
         if (inventory == null) {
@@ -35,12 +42,21 @@ public class InventoryService {
         return inventory;
     }
 
+    //private static final double LOW_STOCK_THRESHOLD = 10.0;
+
+    //public void checkStockLevel(Inventory inventory) {
+        //if (inventory.getQty() < LOW_STOCK_THRESHOLD) {
+            //log.warn("Low stock alert for product ID: " + inventory.getProduct().getProductId());
+        //}
+    //}
+
     public String addInventory(Inventory inventory) {
         Inventory i = inventoryRepository.findByInventoryId(inventory.getInventoryId());
         if (i == null) {
             inventoryRepository.save(inventory);
             log.info("Added new inventory item");
-            return "Inventory added successfully";
+            //checkStockLevel(inventory);
+            return "Inventory added Successfully";
         }
         log.error("Inserted an already existing inventory item");
         throw new NoSuchElementException("Inventory found with ID: " +inventory.getInventoryId());
@@ -53,6 +69,7 @@ public class InventoryService {
                 i.setQty(inventory.getQty());
                 inventoryRepository.save(i);
                 log.info("Updated an inventory item");
+                //checkStockLevel(i);
                 return "Inventory updated successfully";
             }
             throw new NoSuchElementException("Inventory not found with ID: " + inventoryId);
