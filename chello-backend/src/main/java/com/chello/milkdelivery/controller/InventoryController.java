@@ -14,7 +14,7 @@ import java.util.List;
 public class InventoryController {
     private InventoryService inventoryService;
 
-    @Autowired
+    //@Autowired
     public InventoryController(InventoryService inventoryService) {
         this.inventoryService = inventoryService;
     }
