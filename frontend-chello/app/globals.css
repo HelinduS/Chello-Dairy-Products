@@ -111,6 +111,20 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+@layer utilities {
+  .font-caveat {
+    font-family: "Caveat", cursive;
+  }
+  .font-caveat {
+    font-family: var(--font-caveat);
+  }
+  .font-geist-sans {
+    font-family: var(--font-geist-sans);
+  }
+  .font-geist-mono {
+    font-family: var(--font-geist-mono);
+  }
+}
 
 @layer base {
   * {
