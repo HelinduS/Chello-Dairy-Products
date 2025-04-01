@@ -25,8 +25,12 @@ export default function RootLayout({
         <html lang="en">
         <body className="antialiased">
         <div className="flex min-h-screen">
-            {isAdminDashboard && <Sidebar />}
-            <main className={`flex-1 h-screen p-6 ${isAdminDashboard ? "ml-64" : ""}`}>
+            {isAdminDashboard && (
+                <div className="hidden md:flex md:w-64">
+                    <Sidebar />
+                </div>
+            )}
+            <main className="flex-1 h-screen p-6">
                 {children}
             </main>
         </div>

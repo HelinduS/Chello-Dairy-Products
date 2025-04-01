@@ -5,7 +5,7 @@ import { Users, Package, Truck, ClipboardList } from "lucide-react"; //icons
 import { Card } from "@/components/ui/card";
 
 
-// Define the Order type
+// Define the Order typex
 interface order {
     id: string;
     customerName: string;
