@@ -1,29 +1,36 @@
-"use client"
+"use client";
 
-import type React from "react"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { jwtDecode } from "jwt-decode"; // Import jwt-decode
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
+// Define a type for the decoded JWT payload
+interface JwtPayload {
+  sub: string;
+  role: string; // Expecting "USER" or "ADMIN"
+  iat?: number;
+  exp?: number;
+}
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       const response = await fetch("http://localhost:8080/api/auth/authenticate", {
@@ -32,25 +39,36 @@ export default function LoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Authentication failed")
+        throw new Error(data.message || "Authentication failed");
       }
 
-      // Store token or user data in localStorage or cookies
-      localStorage.setItem("token",  data.access_token)
+      // Store the access token
+      const accessToken = data.access_token;
+      localStorage.setItem("token", accessToken);
 
-      // Redirect to dashboard or home page
-      router.push("/customer-dash")
+      // Decode the JWT to get the role
+      const decodedToken = jwtDecode<JwtPayload>(accessToken);
+      const userRole = decodedToken.role;
+
+      // Route based on role
+      if (userRole === "ADMIN") {
+        router.push("/admindas");
+      } else if (userRole === "USER") {
+        router.push("/customer-dash");
+      } else {
+        throw new Error("Unknown role");
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed. Please try again.")
+      setError(err instanceof Error ? err.message : "Login failed. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -111,7 +129,6 @@ export default function LoginPage() {
         </Card>
       </div>
 
-      {/* Right side - Image */}
       <div className="hidden bg-muted md:block md:w-1/2">
         <div className="relative h-full w-full">
           <Image
@@ -124,6 +141,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
