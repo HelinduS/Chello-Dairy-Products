@@ -45,7 +45,7 @@ export default function Sidebar() {
                             </Link>
                         </li>
                         <li>
-                            <Link href="admindas/customers"
+                            <Link href="/admindas/customers"
                                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800">
                                 <Users size={18}/>
                                 <span>Customers</span>
