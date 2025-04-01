@@ -1,6 +1,6 @@
 "use client";
 
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/components/ui/sidebar";
@@ -15,22 +15,31 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
+const caveat = Caveat({
+    variable: "--font-caveat",
+    subsets: ["latin"],
+});
+
 export default function RootLayout({
-                                       children,
-                                   }: Readonly<{ children: React.ReactNode }>) {
+    children,
+}: Readonly<{ children: React.ReactNode }>) {
     const pathname = usePathname();
     const isAdminDashboard = pathname.startsWith("/admindas");
 
     return (
         <html lang="en">
-        <body className="antialiased">
-        <div className="flex min-h-screen">
-            {isAdminDashboard && <Sidebar />}
-            <main className={`flex-1 h-screen p-6 ${isAdminDashboard ? "ml-64" : ""}`}>
-                {children}
-            </main>
-        </div>
-        </body>
+            <body className={`${geistSans.variable} ${geistMono.variable} ${caveat.variable} antialiased`}>
+                <div className="flex min-h-screen">
+                    {isAdminDashboard && (
+                        <div className="hidden md:flex md:w-64">
+                            <Sidebar />
+                        </div>
+                    )}
+                    <main className="flex-1 h-screen p-6">
+                        {children}
+                    </main>
+                </div>
+            </body>
         </html>
     );
 }

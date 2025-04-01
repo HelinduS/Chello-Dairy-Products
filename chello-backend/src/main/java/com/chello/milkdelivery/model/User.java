@@ -60,9 +60,6 @@ public class User implements UserDetails {
     @Column(name = "address", nullable = false, unique = false, length = 225)
     private String address;
 
-    @Column(name = "profile_image", nullable = true)
-    private String profileImage;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
@@ -101,5 +98,6 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+    public Role getRole() { return role; }
 
 }

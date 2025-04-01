@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.chello.milkdelivery.config.JwtService;
 import com.chello.milkdelivery.repository.UserRepository;
+import com.chello.milkdelivery.dto.ForgotPasswordRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,32 +31,32 @@ public class AuthenticationService {
     var role = email.toLowerCase().endsWith("@chello.com") ? User.Role.ADMIN : User.Role.USER;
 
     var user = User.builder()
-        .username(request.getUsername())
-        .email(request.getEmail())
-        .address(request.getAddress())
-        .password(passwordEncoder.encode(request.getPassword()))
-        .role(role)
-        .phoneNumber(request.getPhoneNumber())
-        .build();
-    
+            .username(request.getUsername())
+            .email(request.getEmail())
+            .address(request.getAddress())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .role(role)
+            .phoneNumber(request.getPhoneNumber())
+            .build();
+
     repository.save(user);
 
     var accessToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user); // Generate refresh token
 
     return AuthenticationResponse.builder()
-        .accessToken(accessToken)
-        .refreshToken(refreshToken)
-        .build();
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
   }
 
   public AuthenticationResponse refreshToken(String refreshToken) {
-    String username = jwtService.extractUsername(refreshToken); 
+    String username = jwtService.extractUsername(refreshToken);
     var user = repository.findByUsername(username) // Retrieve user from DB
-        .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
     if (!jwtService.validateToken(refreshToken, user)) {
-        throw new RuntimeException("Invalid refresh token");
+      throw new RuntimeException("Invalid refresh token");
     }
 
     var newAccessToken = jwtService.generateToken(user);
@@ -65,30 +66,30 @@ public class AuthenticationService {
             .accessToken(newAccessToken)
             .refreshToken(newRefreshToken)
             .build();
-}
+  }
 
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
     authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            request.getUsername(),
-            request.getPassword()));
+            new UsernamePasswordAuthenticationToken(
+                    request.getUsername(),
+                    request.getPassword()));
     var user = repository.findByUsername(request.getUsername())
-        .orElseThrow();
+            .orElseThrow();
 
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user); // Generate refresh token
 
 
     return AuthenticationResponse.builder()
-        .accessToken(jwtToken)
-        .refreshToken(refreshToken)
-        .build();
+            .accessToken(jwtToken)
+            .refreshToken(refreshToken)
+            .build();
   }
 
   //method to check whether the user exists
   public boolean userExists(Long id, String username, User.Role role) {
-        return repository.existsByIdAndUsernameAndRole(id, username, role);
+    return repository.existsByIdAndUsernameAndRole(id, username, role);
   }
 
   //method to update password
@@ -98,6 +99,44 @@ public class AuthenticationService {
       u.setPassword(passwordEncoder.encode(password));
       repository.save(u);
     });
+  }
+
+  public boolean updateUserDetails(UpdateUserDetailsRequest request) {
+    User user = repository.findByUsername(request.getUsername())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // Update fields if they are not null or empty
+    if (request.getPhoneNumber() != null && !request.getPhoneNumber().isEmpty()) {
+      user.setPhoneNumber(request.getPhoneNumber());
+    }
+
+    if (request.getAddress() != null && !request.getAddress().isEmpty()) {
+      user.setAddress(request.getAddress());
+    }
+
+    repository.save(user);
+    return true;
+  }
+  // New forgot-password method
+  public void handleForgotPassword(ForgotPasswordRequest request) {
+    // Validate input
+    if (request.getEmail() == null || request.getEmail().isEmpty()) {
+      throw new RuntimeException("Email is required");
+    }
+    if (request.getNewPassword() == null || request.getNewPassword().isEmpty()) {
+      throw new RuntimeException("New password is required");
+    }
+
+    // Find user by email
+    User user = repository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new RuntimeException("User not found with email: " + request.getEmail()));
+
+    // Encrypt and update password
+    String encryptedPassword = passwordEncoder.encode(request.getNewPassword());
+    user.setPassword(encryptedPassword);
+
+    // Save to database
+    repository.save(user);
   }
 
 
