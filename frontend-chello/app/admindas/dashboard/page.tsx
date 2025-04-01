@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Users, Package, Truck, ClipboardList } from "lucide-react"; // Necessary icons
-import { Card } from "@/components/ui/card";  // Assuming Card is used to wrap content
+import { Users, Package, Truck, ClipboardList } from "lucide-react"; //icons
+import { Card } from "@/components/ui/card";
 
 
 // Define the Order type
@@ -18,7 +18,6 @@ const DashboardPage = () => {
         users: 0,
         orders: 0,
         drivers: 0,
-        inventory: 0,
     });
 
     // Define state for holding recent orders data
@@ -37,7 +36,6 @@ const DashboardPage = () => {
                     users: data.users,
                     orders: data.orders,
                     drivers: data.drivers,
-                    inventory: data.inventory,
                 });
             } catch (error) {
                 console.error("Error fetching stats:", error);
@@ -65,23 +63,26 @@ const DashboardPage = () => {
     }, [timePeriod]); // Runs every time the timePeriod changes
 
     return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+
+        <div className="w-full p-4 lg:p-6">
+            <h1 className="text-3xl font-bold mb-6 text-left">Admin Dashboard</h1>
 
             {/* Dashboard Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Users Card */}
                 <Card className="bg-blue-900 p-6 rounded-xl shadow-md text-white">
-                    <h2 className="text-xl font-semibold">Users</h2>
-                    <p className="text-3xl font-bold">{stats.users}</p>
-                    <div className="mt-4 flex items-center">
-                        <Users size={24} />
-                        <span className="ml-2">Manage your users</span>
-                    </div>
+                    <a href="/users" className="flex flex-col gap-6">
+                        <h2 className="text-xl font-semibold">Users</h2>
+                        <p className="text-3xl font-bold">{stats.users}</p>
+                        <div className="mt-4 flex items-center">
+                            <Users size={24} />
+                            <span className="ml-2">Manage your users</span>
+                        </div>
+                    </a>
                 </Card>
 
                 {/* Orders Card */}
-                <Card className="bg-green-900 p-6 rounded-xl shadow-md text-white">
+                <Card className="bg-blue-900 p-6 rounded-xl shadow-md text-white">
                     <h2 className="text-xl font-semibold">Orders</h2>
                     <p className="text-3xl font-bold">{stats.orders}</p>
                     <div className="mt-4 flex items-center">
@@ -91,7 +92,7 @@ const DashboardPage = () => {
                 </Card>
 
                 {/* Delivery Drivers Card */}
-                <Card className="bg-yellow-900 p-6 rounded-xl shadow-md text-white">
+                <Card className="bg-blue-900 p-6 rounded-xl shadow-md text-white">
                     <h2 className="text-xl font-semibold">Delivery Drivers</h2>
                     <p className="text-3xl font-bold">{stats.drivers}</p>
                     <div className="mt-4 flex items-center">
@@ -100,20 +101,10 @@ const DashboardPage = () => {
                     </div>
                 </Card>
 
-                {/* Inventory Card */}
-                <Card className="bg-purple-900 p-6 rounded-xl shadow-md text-white">
-                    <h2 className="text-xl font-semibold">Inventory</h2>
-                    <p className="text-3xl font-bold">{stats.inventory}</p>
-                    <div className="mt-4 flex items-center">
-                        <Package size={24} />
-                        <span className="ml-2">Check inventory</span>
-                    </div>
-                </Card>
             </div>
 
             {/* Time Period Selector for Recent Orders */}
             <div className="mt-8">
-                <h3 className="text-xl font-semibold">Select Time Period for Recent Orders</h3>
                 <select
                     value={timePeriod}
                     onChange={(e) => setTimePeriod(e.target.value)}
