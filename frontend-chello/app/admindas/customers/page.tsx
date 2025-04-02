@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import UserCard from "@/components/ui/userCard";
+import { Card } from "@/components/ui/card"; // For popup
+import { Button } from "@/components/ui/button"; // For Back button
 
 interface Customer {
     id: number;
@@ -19,6 +21,9 @@ const CustomersPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [searchBy, setSearchBy] = useState<"username" | "address" | "phoneNumber">("username");
+    const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
+    const [showNotifyPopup, setShowNotifyPopup] = useState(false);
+    const [showHistoryPopup, setShowHistoryPopup] = useState(false);
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -35,7 +40,7 @@ const CustomersPage = () => {
 
                 const data = await response.json();
                 setCustomers(data);
-                setFilteredCustomers(data); // Initially, all customers are shown
+                setFilteredCustomers(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "An error occurred");
             } finally {
@@ -49,7 +54,7 @@ const CustomersPage = () => {
     const handleSearch = () => {
         const lowerCaseTerm = searchTerm.toLowerCase();
         const filtered = customers.filter((customer) => {
-            const field = customer[searchBy] || ""; // Handle undefined fields (e.g., phoneNumber)
+            const field = customer[searchBy] || "";
             return field.toLowerCase().includes(lowerCaseTerm);
         });
         setFilteredCustomers(filtered);
@@ -59,8 +64,24 @@ const CustomersPage = () => {
         if (searchBy === "username") setSearchBy("address");
         else if (searchBy === "address") setSearchBy("phoneNumber");
         else setSearchBy("username");
-        setSearchTerm(""); // Reset search term when toggling
-        setFilteredCustomers(customers); // Reset filtered list
+        setSearchTerm("");
+        setFilteredCustomers(customers);
+    };
+
+    const handleNotifyClick = (id: number) => {
+        setSelectedCustomerId(id);
+        setShowNotifyPopup(true);
+    };
+
+    const handleHistoryClick = (id: number) => {
+        setSelectedCustomerId(id);
+        setShowHistoryPopup(true);
+    };
+
+    const closePopup = () => {
+        setShowNotifyPopup(false);
+        setShowHistoryPopup(false);
+        setSelectedCustomerId(null);
     };
 
     if (loading) {
@@ -82,7 +103,7 @@ const CustomersPage = () => {
     }
 
     return (
-        <div className="w-full p-4 lg:p-6">
+        <div className="w-full p-4 lg:p-6 relative">
             <h1 className="text-3xl font-bold mb-6 text-left">Customers</h1>
 
             {/* Search Bar */}
@@ -119,12 +140,40 @@ const CustomersPage = () => {
                             phoneNumber={customer.phoneNumber}
                             address={customer.address}
                             role={customer.role}
+                            onNotifyClick={() => handleNotifyClick(customer.id)}
+                            onHistoryClick={() => handleHistoryClick(customer.id)}
                         />
                     ))
                 ) : (
                     <p className="text-gray-500">No customers found matching your search.</p>
                 )}
             </div>
+
+            {/* Notify Popup */}
+            {showNotifyPopup && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <Card className="p-6 w-full max-w-md">
+                        <h2 className="text-xl font-bold mb-4">Notify Customer</h2>
+                        <p className="text-gray-500">This is a placeholder for notification content.</p>
+                        <Button className="mt-4" variant="outline" onClick={closePopup}>
+                            Back
+                        </Button>
+                    </Card>
+                </div>
+            )}
+
+            {/* History Popup */}
+            {showHistoryPopup && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <Card className="p-6 w-full max-w-md">
+                        <h2 className="text-xl font-bold mb-4">Customer History</h2>
+                        <p className="text-gray-500">This is a placeholder for history content.</p>
+                        <Button className="mt-4" variant="outline" onClick={closePopup}>
+                            Back
+                        </Button>
+                    </Card>
+                </div>
+            )}
         </div>
     );
 };
