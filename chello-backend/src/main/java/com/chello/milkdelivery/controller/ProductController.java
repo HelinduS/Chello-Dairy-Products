@@ -14,7 +14,7 @@ import java.util.List;
 public class ProductController {
     private ProductService productService;
 
-    @Autowired
+    //@Autowired
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
