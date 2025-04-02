@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import UserCard from "@/components/ui/userCard";
-import { Card } from "@/components/ui/card"; // For popup
-import { Button } from "@/components/ui/button"; // For Back button
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface Customer {
     id: number;
@@ -12,6 +12,12 @@ interface Customer {
     phoneNumber?: string;
     address: string;
     role: "ADMIN" | "USER";
+}
+
+interface Message {
+    id: number;
+    customerId: number;
+    message: string;
 }
 
 const CustomersPage = () => {
@@ -24,6 +30,8 @@ const CustomersPage = () => {
     const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
     const [showNotifyPopup, setShowNotifyPopup] = useState(false);
     const [showHistoryPopup, setShowHistoryPopup] = useState(false);
+    const [messageInput, setMessageInput] = useState("");
+    const [messages, setMessages] = useState<Message[]>([]);
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -34,10 +42,7 @@ const CustomersPage = () => {
                     headers: { "Content-Type": "application/json" },
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch customers: ${response.status}`);
-                }
-
+                if (!response.ok) throw new Error(`Failed to fetch customers: ${response.status}`);
                 const data = await response.json();
                 setCustomers(data);
                 setFilteredCustomers(data);
@@ -50,6 +55,20 @@ const CustomersPage = () => {
 
         fetchCustomers();
     }, []);
+
+    const fetchMessages = async (customerId: number) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/users/${customerId}/messages`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+            if (!response.ok) throw new Error("Failed to fetch messages");
+            const data = await response.json();
+            setMessages(data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const handleSearch = () => {
         const lowerCaseTerm = searchTerm.toLowerCase();
@@ -71,6 +90,7 @@ const CustomersPage = () => {
     const handleNotifyClick = (id: number) => {
         setSelectedCustomerId(id);
         setShowNotifyPopup(true);
+        fetchMessages(id); // Fetch messages when popup opens
     };
 
     const handleHistoryClick = (id: number) => {
@@ -82,6 +102,39 @@ const CustomersPage = () => {
         setShowNotifyPopup(false);
         setShowHistoryPopup(false);
         setSelectedCustomerId(null);
+        setMessageInput("");
+        setMessages([]);
+    };
+
+    const handleSendMessage = async () => {
+        if (!selectedCustomerId || !messageInput.trim()) return;
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/users/${selectedCustomerId}/messages`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: messageInput }),
+            });
+            if (!response.ok) throw new Error("Failed to send message");
+            const newMessage = await response.json();
+            setMessages([...messages, newMessage]);
+            setMessageInput(""); // Clear input after sending
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleDeleteMessage = async (messageId: number) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/users/messages/${messageId}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+            });
+            if (!response.ok) throw new Error("Failed to delete message");
+            setMessages(messages.filter((msg) => msg.id !== messageId));
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     if (loading) {
@@ -115,16 +168,10 @@ const CustomersPage = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="p-2 border rounded w-full sm:w-64"
                 />
-                <button
-                    onClick={handleSearch}
-                    className="p-2 bg-blue-950 text-white rounded"
-                >
+                <button onClick={handleSearch} className="p-2 bg-blue-950 text-white rounded">
                     Search
                 </button>
-                <button
-                    onClick={handleToggleSearchBy}
-                    className="p-2 border rounded"
-                >
+                <button onClick={handleToggleSearchBy} className="p-2 border rounded">
                     Search by: {searchBy.charAt(0).toUpperCase() + searchBy.slice(1)}
                 </button>
             </div>
@@ -150,11 +197,48 @@ const CustomersPage = () => {
             </div>
 
             {/* Notify Popup */}
-            {showNotifyPopup && (
+            {showNotifyPopup && selectedCustomerId && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <Card className="p-6 w-full max-w-md">
-                        <h2 className="text-xl font-bold mb-4">Notify Customer</h2>
-                        <p className="text-gray-500">This is a placeholder for notification content.</p>
+                    <Card className="p-6 w-full max-w-md flex flex-col h-96">
+                        {/* Upper Half: Message Input */}
+                        <div className="flex-1 border-b pb-4">
+                            <h2 className="text-xl font-bold mb-4">Notify Customer</h2>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Enter message"
+                                    value={messageInput}
+                                    onChange={(e) => setMessageInput(e.target.value)}
+                                    className="p-2 border rounded flex-1"
+                                />
+                                <Button variant="default" onClick={handleSendMessage}>
+                                    Send
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Lower Half: Old Messages */}
+                        <div className="flex-1 pt-4 overflow-y-auto">
+                            <h3 className="text-lg font-semibold mb-2">Previous Messages</h3>
+                            {messages.length > 0 ? (
+                                messages.map((msg) => (
+                                    <div key={msg.id} className="flex justify-between items-center mb-2">
+                                        <p className="text-gray-700">{msg.message}</p>
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => handleDeleteMessage(msg.id)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-500">No messages yet.</p>
+                            )}
+                        </div>
+
+                        {/* Back Button */}
                         <Button className="mt-4" variant="outline" onClick={closePopup}>
                             Back
                         </Button>
@@ -162,7 +246,7 @@ const CustomersPage = () => {
                 </div>
             )}
 
-            {/* History Popup */}
+            {/* History Popup (Unchanged for now) */}
             {showHistoryPopup && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <Card className="p-6 w-full max-w-md">
