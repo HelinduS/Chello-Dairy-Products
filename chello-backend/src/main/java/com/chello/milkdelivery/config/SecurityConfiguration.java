@@ -40,7 +40,7 @@ public class SecurityConfiguration {
                             return config;
                         }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/orders/**", "/api/drivers/**").permitAll()
+                        .requestMatchers("/api/orders/**", "/api/drivers/**","/api/users/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // FIXED: Use hasRole instead of hasAuthority
                         .anyRequest().authenticated()

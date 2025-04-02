@@ -1,11 +1,15 @@
 package com.chello.milkdelivery.service;
 
+import com.chello.milkdelivery.dto.UserDTO;
 import com.chello.milkdelivery.model.User;
 import com.chello.milkdelivery.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -44,5 +48,19 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findByRole(User.Role.USER); // Filter by USER role
+        return users.stream().map(user -> {
+            UserDTO dto = new UserDTO();
+            dto.setId(user.getId());
+            dto.setUsername(user.getUsername());
+            dto.setEmail(user.getEmail());
+            dto.setPhoneNumber(user.getPhoneNumber());
+            dto.setAddress(user.getAddress());
+            dto.setRole(user.getRole().name());
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
