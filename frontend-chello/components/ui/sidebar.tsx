@@ -59,7 +59,7 @@ export default function Sidebar() {
                             </Link>
                         </li>
                         <li>
-                            <Link href="/admindas/Deliveries"
+                            <Link href="/deliverydashboard"
                                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800">
                                 <Truck size={18}/>
                                 <span>Deliveries</span>
