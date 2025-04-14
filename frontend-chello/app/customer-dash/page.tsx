@@ -7,7 +7,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { User } from "lucide-react" // Person icon from lucide-react
-
+import { Caveat } from 'next/font/google'; 
 
 import { Mail } from "lucide-react"
 import { Truck } from "lucide-react"
