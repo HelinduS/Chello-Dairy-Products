@@ -13,7 +13,7 @@ public class PlaceOrderDto {
     @NotEmpty
     private String customerName;
 
-    private LocalDate orderDate; // Optional, can default to current date
+    private LocalDate orderDate; 
 
     @NotNull
     @NotEmpty
