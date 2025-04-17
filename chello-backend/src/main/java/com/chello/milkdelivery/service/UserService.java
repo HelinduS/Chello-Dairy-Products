@@ -1,7 +1,10 @@
 package com.chello.milkdelivery.service;
 
+import com.chello.milkdelivery.dto.MessageDTO;
 import com.chello.milkdelivery.dto.UserDTO;
+import com.chello.milkdelivery.model.Message;
 import com.chello.milkdelivery.model.User;
+import com.chello.milkdelivery.repository.MessageRepository;
 import com.chello.milkdelivery.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,23 +20,22 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    // Get the current authenticated user's details
+    @Autowired
+    private MessageRepository messageRepository;
+
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName(); // Username from JWT (sub)
+        String username = authentication.getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    // Update the current authenticated user's details
     public User updateUser(User updatedUser) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Update only provided fields (non-null and non-empty)
         if (updatedUser.getUsername() != null && !updatedUser.getUsername().isEmpty()) {
             user.setUsername(updatedUser.getUsername());
         }
@@ -46,12 +48,11 @@ public class UserService {
         if (updatedUser.getAddress() != null && !updatedUser.getAddress().isEmpty()) {
             user.setAddress(updatedUser.getAddress());
         }
-
         return userRepository.save(user);
     }
 
     public List<UserDTO> getAllUsers() {
-        List<User> users = userRepository.findByRole(User.Role.USER); // Filter by USER role
+        List<User> users = userRepository.findByRole(User.Role.USER);
         return users.stream().map(user -> {
             UserDTO dto = new UserDTO();
             dto.setId(user.getId());
@@ -62,5 +63,31 @@ public class UserService {
             dto.setRole(user.getRole().name());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public MessageDTO sendMessage(Long customerId, String message) {
+        Message msg = Message.builder()
+                .customerId(customerId)
+                .message(message)
+                .build();
+        Message savedMessage = messageRepository.save(msg);
+        return mapToMessageDTO(savedMessage);
+    }
+
+    public List<MessageDTO> getMessagesByCustomerId(Long customerId) {
+        List<Message> messages = messageRepository.findByCustomerId(customerId);
+        return messages.stream().map(this::mapToMessageDTO).collect(Collectors.toList());
+    }
+
+    public void deleteMessage(Long messageId) {
+        messageRepository.deleteById(messageId);
+    }
+
+    private MessageDTO mapToMessageDTO(Message message) {
+        MessageDTO dto = new MessageDTO();
+        dto.setId(message.getId());
+        dto.setCustomerId(message.getCustomerId());
+        dto.setMessage(message.getMessage());
+        return dto;
     }
 }
