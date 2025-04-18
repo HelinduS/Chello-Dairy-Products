@@ -2,7 +2,8 @@
 
 import {useState} from "react";
 import Link from "next/link";
-import {User, Users, Package, Truck, LayoutDashboard, ClipboardList, LogOut, Menu, ChevronLeft} from "lucide-react";
+import {User, Users, Package, Truck, LayoutDashboard, ClipboardList, LogOut, Menu, ChevronLeft, ShoppingBasket} from "lucide-react";
+import { Item } from "@radix-ui/react-select";
 
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -77,6 +78,13 @@ export default function Sidebar() {
                                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800">
                                 <ClipboardList size={18}/>
                                 <span>Inventory</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/admindas/products"
+                                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800">
+                                <ShoppingBasket size={18}/>
+                                <span>Products</span>
                             </Link>
                         </li>
 
