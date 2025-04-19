@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -19,28 +19,56 @@ type Product = {
 // ✅ Product List
 const productData: Product[] = [
   {
-    id: 1,
-    name: "Fresh Cow Milk",
+    id: 2,
+    name: "Yoghurt Drink With Basil Seeds (Mango Flavour 180ml)",
     image: "/images/mango.jpg",
     price: "Rs. 250 / L",
-    description: "Rich in calcium, perfect for daily consumption.",
-    details:
-      "Freshly sourced from local dairy farms, this milk is unprocessed, pure, and packed with essential nutrients.",
-    nutrition: "Calories: 150, Protein: 8g, Calcium: 300mg",
-    rating: 4.5,
+    description: "Perfect for daily consumption, rich in calcium.",
+    details: "Mango flavour yoghurt drink with basil seeds, packed with nutrients.",
+    nutrition: "Calories: 140, Protein: 6g, Calcium: 280mg",
+    rating: 4.6,
     tag: "#1 most liked",
   },
   {
-    id: 2,
-    name: "Organic Buffalo Milk",
-    image: "/images/buffalo-milk.jpg",
-    price: "Rs. 300 / L",
-    description: "Creamy and nutrient-packed organic buffalo milk.",
-    details:
-      "Our organic buffalo milk is certified and tested. Best for making rich sweets like kheer and barfi.",
-    nutrition: "Calories: 180, Protein: 9g, Calcium: 320mg",
-    rating: 4.8,
+    id: 4,
+    name: "Vanila flavored Yoghurt drink",
+    image: "/images/Vanila.jpg",
+    price: "Rs. 250 / L",
+    description: "Perfect for daily consumption, rich in calcium.",
+    details: "Vanilla flavored probiotic yoghurt drink — smooth, light and healthy.",
+    nutrition: "Calories: 130, Protein: 5g, Calcium: 260mg",
+    rating: 4.3,
     tag: "#2 most liked",
+  },
+  {
+    id: 5,
+    name: "Yoghurt Drink With Basil Seeds (Vanila Flavour 180ml)",
+    image: "/images/Vanila(basil).jpg",
+    price: "Rs. 250 / L",
+    description: "Perfect for daily consumption, rich in calcium.",
+    details: "Vanilla yoghurt blended with nutritious basil seeds for enhanced refreshment.",
+    nutrition: "Calories: 135, Protein: 5.5g, Calcium: 270mg",
+    rating: 4.4,
+  },
+  {
+    id: 3,
+    name: "Yoghurt Drink With Basil Seeds (Stroberry Flavour 180ml)",
+    image: "/images/strowberry.png",
+    price: "Rs. 250 / L",
+    description: "Perfect for daily consumption, rich in calcium.",
+    details: "Strawberry flavored yoghurt infused with basil seeds, creamy and delicious.",
+    nutrition: "Calories: 145, Protein: 6g, Calcium: 290mg",
+    rating: 4.5,
+  },
+  {
+    id: 1,
+    name: "Fresh Milk",
+    image: "/images/freshmilk.png",
+    price: "Rs. 250 / L",
+    description: "Perfect for daily consumption, rich in calcium.",
+    details: "Fresh farm milk — unprocessed, pure and full of essential nutrients.",
+    nutrition: "Calories: 150, Protein: 8g, Calcium: 300mg",
+    rating: 4.7,
   },
 ];
 
@@ -139,7 +167,7 @@ export default function ProductPage() {
 
             <button
               onClick={addToWishlist}
-              className="flex items-center gap-2 bg-pink-600 text-white font-medium px-5 py-2 rounded-lg shadow hover:bg-pink-700 transition"
+              className="bg-cyan-700 text-white font-medium px-5 py-2 rounded-lg shadow hover:bg-cyan-800 transition"
             >
               <span>❤️</span>
               <span>Add to Wishlist</span>

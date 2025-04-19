@@ -3,20 +3,43 @@
 import Link from 'next/link';
 
 const productData = [
-  {
-    id: 1,
-    name: 'Fresh Cow Milk',
-    image: '/images/mango.jpg',
-    price: 'Rs. 250 / L',
-    description: 'Perfect for daily consumption, rich in calcium.',
-  },
-  {
-    id: 2,
-    name: 'Organic Buffalo Milk',
-    image: '/images/buffalo-milk.jpg',
-    price: 'Rs. 300 / L',
-    description: 'Nutrient-packed and ideal for traditional sweets.',
-  },
+    {
+        id: 1,
+        name: 'Fresh Milk (1L)',
+        image: '/images/freshmilk.png',
+        price: 'Rs. 250 / L',
+        description: 'Pure, fresh cow milk straight from the farm, unprocessed and healthy.',
+      },
+    
+    {
+        id: 2,
+        name: 'Yoghurt Drink With Basil Seeds (Mango Flavour 180ml)',
+        image: '/images/mango.jpg',
+        price: 'Rs. 250 / L',
+        description: 'Tropical mango yoghurt blended with basil seeds for a refreshing boost.',
+      },
+      {
+        id: 3,
+        name: 'Yoghurt Drink With Basil Seeds (Strawberry Flavour 180ml)',
+        image: '/images/strowberry.png',
+        price: 'Rs. 250 / L',
+        description: 'Creamy strawberry yoghurt with basil seeds – fruity and fun!',
+      },
+      {
+        id: 4,
+        name: 'Vanila flavored Yoghurt drink',
+        image: '/images/Vanila.jpg',
+        price: 'Rs. 250 / L',
+        description: 'Smooth vanilla yoghurt drink, rich in calcium and flavor.',
+      },
+      {
+        id: 5,
+        name: 'Yoghurt Drink With Basil Seeds (Vanilla Flavour 180ml)',
+        image: '/images/Vanila(basil).jpg',
+        price: 'Rs. 250 / L',
+        description: 'Classic vanilla yoghurt paired with basil seeds for extra nutrition.',
+      },
+      
 ];
 
 export default function ProductsPage() {
