@@ -10,8 +10,10 @@ public class Product {
     private Long id;
 
     private String name;
-    private String price;
+    private double price;
+    @Column(name = "image", columnDefinition = "TEXT")
     private String image;
+    private int stock;
 
     // Getters and Setters
     public Long getId() { 
@@ -28,10 +30,10 @@ public class Product {
         this.name = name; 
     }
 
-    public String getPrice() { 
+    public double getPrice() { 
         return price; 
     }
-    public void setPrice(String price) { 
+    public void setPrice(double price) { 
         this.price = price; 
     }
 
@@ -41,5 +43,13 @@ public class Product {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+    
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 } 
