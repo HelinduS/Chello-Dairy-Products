@@ -2,9 +2,12 @@ package com.chello.milkdelivery.controller;
 
 import com.chello.milkdelivery.model.Product;
 import com.chello.milkdelivery.repository.ProductRepository;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/products")
@@ -25,5 +28,26 @@ public class ProductController {
     @GetMapping
     public List<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        Optional<Product> existing = productRepository.findById(id);
+        if (!existing.isPresent()) {
+        return ResponseEntity.notFound().build();
+        }
+
+         product.setId(id); // make sure the ID is correct
+        Product updated = productRepository.save(product);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        if (!productRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        productRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

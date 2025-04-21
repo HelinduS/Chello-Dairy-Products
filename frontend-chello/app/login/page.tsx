@@ -57,7 +57,7 @@ export default function LoginPage() {
 
       // Route based on role
       if (userRole === "ADMIN") {
-        router.push("/admindas");
+        router.push("/admindas/dashboard");
       } else if (userRole === "USER") {
         router.push("/customer-dash");
       } else {
