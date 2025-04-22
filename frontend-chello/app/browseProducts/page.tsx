@@ -2,11 +2,13 @@ import ProductGrid from '@/components/ui/productsGrid';
 
 const BrowseProductsPage = () => {
   return (
-    <div>
-      <header className="p-4 bg-gray-100 text-center">
-        <h1 className="text-2xl font-bold">Browse Products</h1>
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-gray-900">Browse Products</h1>
+        </div>
       </header>
-      <main className="p-4 max-w-6xl mx-auto">
+      <main className="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <ProductGrid />
       </main>
     </div>

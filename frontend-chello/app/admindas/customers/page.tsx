@@ -156,7 +156,7 @@ const CustomersPage = () => {
     }
 
     return (
-        <div className="w-full p-4 lg:p-6 relative">
+        <div className="w-full p-2 lg:p-6 relative">
             <h1 className="text-3xl font-bold mb-6 text-left">Customers</h1>
 
             {/* Search Bar */}

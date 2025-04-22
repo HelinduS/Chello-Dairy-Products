@@ -31,11 +31,15 @@ export default function RootLayout({
             <body className={`${geistSans.variable} ${geistMono.variable} ${caveat.variable} antialiased`}>
                 <div className="flex min-h-screen">
                     {isAdminDashboard && (
-                        <div className="hidden md:flex md:w-64">
+                        <div className="hidden md:block md489:w-64">
                             <Sidebar />
                         </div>
                     )}
-                    <main className="flex-1 h-screen p-6">
+                    <main
+                        className={`flex-1 min-h-screen ${
+                            isAdminDashboard ? "md:ml-64 md:p-4 p-4" : "p-4"
+                        }`}
+                    >
                         {children}
                     </main>
                 </div>
