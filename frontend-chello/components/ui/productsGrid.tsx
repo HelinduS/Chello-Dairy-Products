@@ -19,7 +19,7 @@ interface Product {
   id: number;
   name: string;
   price: number;
-  image: string | null; // Allow null to match backend
+  image: string | null;
   stock: number;
 }
 
@@ -33,7 +33,7 @@ interface PurchaseData {
 const API_URL = 'http://localhost:8080/api/products';
 const PURCHASE_API_URL = 'http://localhost:8080/api/customer-products';
 const FAVORITES_API_URL = 'http://localhost:8080/api/customer-products/favorites';
-const DEFAULT_IMAGE = '/images/placeholder.jpg'; // Default placeholder image
+const DEFAULT_IMAGE = '/images/placeholder.jpg';
 
 const ProductCard = ({ product }: { product: Product }) => {
   const [open, setOpen] = useState(false);
@@ -109,56 +109,55 @@ const ProductCard = ({ product }: { product: Product }) => {
     }
   };
 
-  // Use default image if product.image is invalid
   const imageSrc = product.image && product.image.trim() !== '' ? product.image : DEFAULT_IMAGE;
 
   return (
-    <div className="flex flex-col bg-white border rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow w-full max-w-xs">
-      <div className="relative w-full h-48">
+    <div className="flex flex-col bg-white border rounded-lg shadow-sm p-2 xs:p-3 sm:p-4 hover:shadow-md transition-shadow w-full min-w-0">
+      <div className="relative w-full h-32 xs:h-36 sm:h-40 md:h-48">
         <Image
           src={imageSrc}
           alt={product.name}
           fill
           className="object-contain"
-          sizes="(max-width: 768px) 100vw, 33vw"
+          sizes="(max-width: 480px) 100vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
           priority={false}
         />
       </div>
-      <div className="flex flex-col flex-grow mt-4">
-        <h2 className="text-lg font-semibold text-gray-900">{product.name}</h2>
-        <p className="text-gray-600">${product.price.toFixed(2)}</p>
-        <p className="text-gray-600">Stock: {product.stock}</p>
+      <div className="flex flex-col flex-grow mt-2 xs:mt-3 sm:mt-4">
+        <h2 className="text-xs xs:text-sm sm:text-base font-semibold text-gray-900">{product.name}</h2>
+        <p className="text-gray-600 text-[0.65rem] xs:text-xs sm:text-sm">${product.price.toFixed(2)}</p>
+        <p className="text-gray-600 text-[0.65rem] xs:text-xs sm:text-sm">Stock: {product.stock}</p>
       </div>
-      <div className="mt-4 flex gap-2">
+      <div className="mt-2 xs:mt-3 sm:mt-4 flex gap-1 sm:gap-2">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button
               variant="default"
-              size="sm"
-              className="flex-1"
+              size="xs"
+              className="flex-1 text-[0.65rem] xs:text-xs sm:text-sm"
               disabled={product.stock === 0 || !localStorage.getItem('token')}
             >
               Order
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-[90vw] sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Purchase {product.name}</DialogTitle>
+              <DialogTitle className="text-base sm:text-lg">Purchase {product.name}</DialogTitle>
             </DialogHeader>
-            <p id="purchase-dialog-description" className="text-sm text-muted-foreground mt-1">
+            <p id="purchase-dialog-description" className="text-xs sm:text-sm text-muted-foreground mt-1">
               Select delivery day(s) and quantity (Available stock: {product.stock}).
             </p>
             <div className="space-y-4 mt-4">
               <div>
-                <Label>Delivery Day(s)</Label>
-                <div className="flex gap-4 mt-2">
+                <Label className="text-sm sm:text-base">Delivery Day(s)</Label>
+                <div className="flex flex-col sm:flex-row gap-4 mt-2">
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="wednesday"
                       checked={deliveryDays.includes('Wednesday')}
                       onCheckedChange={() => handleDeliveryDayChange('Wednesday')}
                     />
-                    <Label htmlFor="wednesday">Wednesday</Label>
+                    <Label htmlFor="wednesday" className="text-xs sm:text-sm">Wednesday</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
@@ -166,49 +165,51 @@ const ProductCard = ({ product }: { product: Product }) => {
                       checked={deliveryDays.includes('Sunday')}
                       onCheckedChange={() => handleDeliveryDayChange('Sunday')}
                     />
-                    <Label htmlFor="sunday">Sunday</Label>
+                    <Label htmlFor="sunday" className="text-xs sm:text-sm">Sunday</Label>
                   </div>
                 </div>
               </div>
               <div>
-                <Label>Quantity</Label>
+                <Label className="text-sm sm:text-base">Quantity</Label>
                 <div className="flex items-center gap-2 mt-2">
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="xs"
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity <= 1}
+                    className="text-[0.65rem] xs:text-xs sm:text-sm"
                   >
                     -
                   </Button>
-                  <span>{quantity}</span>
+                  <span className="text-sm sm:text-base">{quantity}</span>
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="xs"
                     onClick={() => handleQuantityChange(1)}
                     disabled={quantity >= product.stock}
+                    className="text-[0.65rem] xs:text-xs sm:text-sm"
                   >
                     +
                   </Button>
                 </div>
               </div>
               <div>
-                <Label>Amount</Label>
-                <p className="text-gray-600">${(quantity * product.price).toFixed(2)}</p>
+                <Label className="text-sm sm:text-base">Amount</Label>
+                <p className="text-gray-600 text-sm sm:text-base">${(quantity * product.price).toFixed(2)}</p>
               </div>
               {error && (
                 <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription className="text-xs sm:text-sm">{error}</AlertDescription>
                 </Alert>
               )}
               {success && (
                 <Alert variant="default">
-                  <AlertDescription>{success}</AlertDescription>
+                  <AlertDescription className="text-xs sm:text-sm">{success}</AlertDescription>
                 </Alert>
               )}
             </div>
             <div className="mt-4 flex gap-2">
-              <Button variant="default" onClick={handleConfirm} className="flex-1">
+              <Button variant="default" onClick={handleConfirm} className="flex-1 text-xs sm:text-sm">
                 Confirm
               </Button>
               <Button
@@ -220,14 +221,14 @@ const ProductCard = ({ product }: { product: Product }) => {
                   setError(null);
                   setSuccess(null);
                 }}
-                className="flex-1"
+                className="flex-1 text-xs sm:text-sm"
               >
                 Cancel
               </Button>
             </div>
           </DialogContent>
         </Dialog>
-        <Button variant="secondary" size="sm" className="flex-1">
+        <Button variant="secondary" size="xs" className="flex-1 text-[0.65rem] xs:text-xs sm:text-sm">
           Add to Cart
         </Button>
       </div>
@@ -303,15 +304,15 @@ const ProductGrid = ({ isFavoritesSection }: ProductGridProps) => {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="bg-white border rounded-lg p-4 animate-pulse">
-            <div className="w-full h-48 bg-gray-200 rounded-md" />
-            <div className="mt-4 h-6 bg-gray-200 rounded w-3/4" />
-            <div className="mt-2 h-4 bg-gray-200 rounded w-1/2" />
-            <div className="mt-4 flex gap-2">
-              <div className="h-10 bg-gray-200 rounded flex-1" />
-              <div className="h-10 bg-gray-200 rounded flex-1" />
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 xs:gap-4 sm:gap-5">
+        {Array.from({ length: 12 }).map((_, index) => (
+          <div key={index} className="bg-white border rounded-lg p-2 xs:p-3 sm:p-4 animate-pulse w-full min-w-0">
+            <div className="w-full h-32 xs:h-36 sm:h-40 md:h-48 bg-gray-200 rounded-md" />
+            <div className="mt-2 xs:mt-3 sm:mt-4 h-5 bg-gray-200 rounded w-3/4" />
+            <div className="mt-1 xs:mt-2 h-4 bg-gray-200 rounded w-1/2" />
+            <div className="mt-2 xs:mt-3 sm:mt-4 flex gap-1 sm:gap-2">
+              <div className="h-7 xs:h-8 sm:h-9 bg-gray-200 rounded flex-1" />
+              <div className="h-7 xs:h-8 sm:h-9 bg-gray-200 rounded flex-1" />
             </div>
           </div>
         ))}
@@ -322,9 +323,13 @@ const ProductGrid = ({ isFavoritesSection }: ProductGridProps) => {
   if (error) {
     return (
       <Alert variant="destructive">
-        <AlertDescription>
+        <AlertDescription className="text-sm sm:text-base">
           {error}
-          <Button variant="link" onClick={isFavoritesSection ? fetchFavoriteProducts : fetchProducts} className="ml-2">
+          <Button
+            variant="link"
+            onClick={isFavoritesSection ? fetchFavoriteProducts : fetchProducts}
+            className="ml-2 text-xs sm:text-sm"
+          >
             Retry
           </Button>
         </AlertDescription>
@@ -334,14 +339,14 @@ const ProductGrid = ({ isFavoritesSection }: ProductGridProps) => {
 
   if (displayProducts.length === 0) {
     return (
-      <p className="text-center text-gray-600">
+      <p className="text-center text-gray-600 text-sm sm:text-base">
         {isFavoritesSection ? 'You haven\'t purchased any products yet.' : 'No products available.'}
       </p>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 xs:gap-4 sm:gap-5">
       {displayProducts.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
