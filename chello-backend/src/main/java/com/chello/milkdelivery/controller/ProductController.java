@@ -50,4 +50,10 @@ public class ProductController {
         productRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/low-stock")
+    public List<Product> getLowStockProducts(@RequestParam(defaultValue = "10") int threshold) {
+        return productRepository.findByStockLessThanEqual(threshold);
+    }
+
 }
