@@ -15,6 +15,17 @@ public class Product {
     private String image;
     private int stock;
 
+    // Default constructor
+    public Product() {}
+
+    // Constructor for mapping
+    public Product(Long id, String name, double price, String image, int stock) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.image = image;
+        this.stock = stock;
+    }
     // Getters and Setters
     public Long getId() { 
         return id; 

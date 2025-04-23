@@ -9,7 +9,14 @@ const BrowseProductsPage = () => {
         </div>
       </header>
       <main className="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <ProductGrid />
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Favorites</h2>
+          <ProductGrid isFavoritesSection={true} />
+        </section>
+        <section>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">All Available Products</h2>
+          <ProductGrid isFavoritesSection={false} />
+        </section>
       </main>
     </div>
   );

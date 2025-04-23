@@ -2,10 +2,13 @@ package com.chello.milkdelivery.controller;
 
 import com.chello.milkdelivery.dto.CustomerProductRequest;
 import com.chello.milkdelivery.model.CustomerProduct;
+import com.chello.milkdelivery.model.Product;
 import com.chello.milkdelivery.service.CustomerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/customer-products")
@@ -21,6 +24,15 @@ public class CustomerProductController {
             return ResponseEntity.ok(saved);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+        }
+    }
+    @GetMapping("/favorites")
+    public ResponseEntity<List<Product>> getCustomerFavorites() {
+        try {
+            List<Product> favorites = customerProductService.getCustomerFavoriteProducts();
+            return ResponseEntity.ok(favorites);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(List.of());
         }
     }
 

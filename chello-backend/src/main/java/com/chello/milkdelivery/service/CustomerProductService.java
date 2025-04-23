@@ -11,10 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 public class CustomerProductService {
 
@@ -81,5 +80,29 @@ public class CustomerProductService {
 
         // Save to database
         return customerProductRepository.save(customerProduct);
+    }
+    public List<Product> getCustomerFavoriteProducts() {
+        // Extract username from JWT token
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("User not authenticated");
+        }
+
+        // Get distinct product IDs purchased by the user
+        Set<Long> productIds = customerProductRepository.findDistinctProductIdsByUsername(username);
+        if (productIds.isEmpty()) {
+            return List.of(); // Return empty list if no favorites
+        }
+
+        // Fetch product details
+        return productRepository.findAllById(productIds).stream()
+                .map(product -> new Product(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getImage(),
+                        product.getStock()
+                ))
+                .collect(Collectors.toList());
     }
 }

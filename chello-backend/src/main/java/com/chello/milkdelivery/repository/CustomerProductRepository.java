@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface CustomerProductRepository extends JpaRepository<CustomerProduct, Long> {
@@ -16,4 +17,7 @@ public interface CustomerProductRepository extends JpaRepository<CustomerProduct
 
     @Query("SELECT cp FROM CustomerProduct cp WHERE cp.username = :username AND (cp.deliveryDay = 'Sunday' OR cp.deliveryDay = 'Wednesday,Sunday')")
     List<CustomerProduct> findSundayDeliveries(String username);
+
+    @Query("SELECT DISTINCT cp.productId FROM CustomerProduct cp WHERE cp.username = :username")
+    Set<Long> findDistinctProductIdsByUsername(String username);
 }

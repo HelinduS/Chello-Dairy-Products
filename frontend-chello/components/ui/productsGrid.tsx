@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
@@ -18,7 +19,7 @@ interface Product {
   id: number;
   name: string;
   price: number;
-  image: string;
+  image: string | null; // Allow null to match backend
   stock: number;
 }
 
@@ -31,6 +32,8 @@ interface PurchaseData {
 
 const API_URL = 'http://localhost:8080/api/products';
 const PURCHASE_API_URL = 'http://localhost:8080/api/customer-products';
+const FAVORITES_API_URL = 'http://localhost:8080/api/customer-products/favorites';
+const DEFAULT_IMAGE = '/images/placeholder.jpg'; // Default placeholder image
 
 const ProductCard = ({ product }: { product: Product }) => {
   const [open, setOpen] = useState(false);
@@ -63,7 +66,7 @@ const ProductCard = ({ product }: { product: Product }) => {
     const purchaseData: PurchaseData = {
       productId: product.id,
       quantity,
-      deliveryDay: deliveryDays.sort().join(','), // Ensure consistent order (e.g., "Monday,Sunday")
+      deliveryDay: deliveryDays.sort().join(','),
       amount: quantity * product.price,
     };
 
@@ -106,11 +109,14 @@ const ProductCard = ({ product }: { product: Product }) => {
     }
   };
 
+  // Use default image if product.image is invalid
+  const imageSrc = product.image && product.image.trim() !== '' ? product.image : DEFAULT_IMAGE;
+
   return (
     <div className="flex flex-col bg-white border rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow w-full max-w-xs">
       <div className="relative w-full h-48">
         <Image
-          src={product.image}
+          src={imageSrc}
           alt={product.name}
           fill
           className="object-contain"
@@ -229,10 +235,16 @@ const ProductCard = ({ product }: { product: Product }) => {
   );
 };
 
-const ProductGrid = () => {
+interface ProductGridProps {
+  isFavoritesSection: boolean;
+}
+
+const ProductGrid = ({ isFavoritesSection }: ProductGridProps) => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [favoriteProducts, setFavoriteProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const fetchProducts = async () => {
     try {
@@ -249,9 +261,45 @@ const ProductGrid = () => {
     }
   };
 
+  const fetchFavoriteProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setFavoriteProducts([]);
+        return;
+      }
+      const res = await fetch(FAVORITES_API_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: 'no-store',
+      });
+      if (res.status === 401) {
+        localStorage.removeItem('token');
+        router.push('/login');
+        throw new Error('Unauthorized');
+      }
+      if (!res.ok) throw new Error(`Failed to fetch favorites: ${res.status}`);
+      const data: Product[] = await res.json();
+      setFavoriteProducts(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (isFavoritesSection) {
+      fetchFavoriteProducts();
+    } else {
+      fetchProducts();
+    }
+  }, [isFavoritesSection]);
+
+  const displayProducts = isFavoritesSection ? favoriteProducts : products;
 
   if (loading) {
     return (
@@ -276,7 +324,7 @@ const ProductGrid = () => {
       <Alert variant="destructive">
         <AlertDescription>
           {error}
-          <Button variant="link" onClick={fetchProducts} className="ml-2">
+          <Button variant="link" onClick={isFavoritesSection ? fetchFavoriteProducts : fetchProducts} className="ml-2">
             Retry
           </Button>
         </AlertDescription>
@@ -284,13 +332,17 @@ const ProductGrid = () => {
     );
   }
 
-  if (products.length === 0) {
-    return <p className="text-center text-gray-600">No products available.</p>;
+  if (displayProducts.length === 0) {
+    return (
+      <p className="text-center text-gray-600">
+        {isFavoritesSection ? 'You haven\'t purchased any products yet.' : 'No products available.'}
+      </p>
+    );
   }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {products.map((product) => (
+      {displayProducts.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
