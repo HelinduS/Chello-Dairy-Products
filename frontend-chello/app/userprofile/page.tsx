@@ -1,14 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function UserProfileFullDashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profilePic, setProfilePic] = useState("https://via.placeholder.com/100");
-  const [name, setName] = useState("John Doe");
-  const [email, setEmail] = useState("john@example.com");
-  const [phone, setPhone] = useState("+94 712345678");
-  const [address, setAddress] = useState("123 Milk Street, Colombo");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [editing, setEditing] = useState(false);
 
   const [history] = useState([
@@ -17,18 +17,35 @@ export default function UserProfileFullDashboard() {
     { id: 3, item: "Ghee", date: "2024-03-10", amount: "Rs. 550" },
   ]);
 
+  useEffect(() => {
+    fetch("http://localhost:8080/api/users")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const user = data[0]; 
+        setName(user.username);       
+        setEmail(user.email);         
+        setPhone(user.phoneNumber);  
+        setAddress(user.address);     
+      })
+      .catch((err) => console.error("Fetch error:", err));
+  }, []);
+
   const handleSave = () => {
     setEditing(false);
   };
 
-const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  const file = event.target.files?.[0];
-  if (file) {
-    const imageUrl = URL.createObjectURL(file);
-    setProfilePic(imageUrl);
-  }
-};
-
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setProfilePic(imageUrl);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">

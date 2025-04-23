@@ -83,7 +83,7 @@ export default function Dashboard() {
                 {/* Sidebar */}
                 <aside className="w-30 border-r p-4 bg-muted">
                     <nav className="space-y-2">
-                        <Link href="/profile" className="flex flex-col items-center space-y-1 text-primary hover:underline">
+                        <Link href="/userprofile" className="flex flex-col items-center space-y-1 text-primary hover:underline">
                             <User className="w-8 h-20" /> {/* Adjusted size */}
                             <span></span>
                         </Link>
