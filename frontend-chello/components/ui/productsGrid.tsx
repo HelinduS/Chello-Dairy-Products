@@ -7,6 +7,7 @@ interface Product {
   name: string;
   price: string;
   image: string;
+  stock: number;
 }
 
 const ProductGrid = () => {
@@ -47,21 +48,27 @@ const ProductGrid = () => {
               />
             </div>
           )}
+          
           {/* Product Name and Price */}
           <div className="flex flex-col flex-grow justify-between mt-4">
             <h2 className="text-lg font-semibold">{product.name}</h2>
             <p className="text-gray-600">{product.price}</p>
+            <p className={`mt-1 text-sm ${product.stock >= 10 ? 'text-green-600' : '!text-red-500'}`}> {
+                 product.stock >= 10 ? `In Stock (${product.stock})` : 'Out of Stock'}</p>
           </div>
-          {/* Buttons Section */}
-          <div className="mt-4 flex justify-between">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-              Buy Now
-            </button>
-            <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-              Add to Cart
-            </button>
-          </div>
+
+         {/* Buttons Section */}
+         <div className="mt-4 flex justify-between">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50" 
+          disabled={product.stock < 10}>
+                 Buy Now
+          </button>
+          <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+          disabled={product.stock < 10}>
+                Add to Cart
+          </button>
         </div>
+      </div>
       ))}
     </div>
   );
