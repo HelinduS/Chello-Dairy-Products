@@ -2,15 +2,19 @@
 
 import React, { useEffect, useState } from 'react';
 
+
 interface Product {
   id: number;
   name: string;
   price: string;
   image: string;
-  stock: number;
 }
 
-const ProductGrid = () => {
+interface ProductGridProps {
+  sortBy: string;
+}
+
+const ProductGrid: React.FC<ProductGridProps> = ({ sortBy }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -31,12 +35,22 @@ const ProductGrid = () => {
       });
   }, []);
 
+  // Sort products based on the sortBy prop
+  const sortedProducts = [...products].sort((a, b) => {
+    if (sortBy === 'priceLowToHigh') {
+      return parseFloat(a.price) - parseFloat(b.price);
+    } else if (sortBy === 'priceHighToLow') {
+      return parseFloat(b.price) - parseFloat(a.price);
+    }
+    return 0; // Default sorting
+  });
+
   if (loading) return <p className="text-center">Loading products...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {products.map((product) => (
+      {sortedProducts.map((product) => (
         <div key={product.id} className="border p-4 rounded shadow-sm w-64 h-full flex flex-col">
           {/* Image Section */}
           {product.image && (
@@ -48,27 +62,21 @@ const ProductGrid = () => {
               />
             </div>
           )}
-          
           {/* Product Name and Price */}
           <div className="flex flex-col flex-grow justify-between mt-4">
             <h2 className="text-lg font-semibold">{product.name}</h2>
             <p className="text-gray-600">{product.price}</p>
-            <p className={`mt-1 text-sm ${product.stock >= 10 ? 'text-green-600' : '!text-red-500'}`}> {
-                 product.stock >= 10 ? `In Stock (${product.stock})` : 'Out of Stock'}</p>
           </div>
-
-         {/* Buttons Section */}
-         <div className="mt-4 flex justify-between">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50" 
-          disabled={product.stock < 10}>
-                 Buy Now
-          </button>
-          <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
-          disabled={product.stock < 10}>
-                Add to Cart
-          </button>
+          {/* Buttons Section */}
+          <div className="mt-4 flex justify-between">
+            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              Buy Now
+            </button>
+            <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+              Add to Cart
+            </button>
+          </div>
         </div>
-      </div>
       ))}
     </div>
   );

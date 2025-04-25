@@ -4,6 +4,9 @@ import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AddProductModal from "@/components/ui/addProductModal";
+import ProductSortDropdown from "@/components/ui/productSort"
+import ProductGrid from "@/components/ui/productsGrid"
+import { useMemo } from "react";
 
 // Product type
 interface Product {
@@ -19,6 +22,21 @@ const AdminProductsPage: React.FC = () => {
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [sortBy, setSortBy] = useState("default");
+
+  const sortedProducts = useMemo(() => {
+    const sorted = [...products];
+    if (sortBy === "priceLowToHigh") {
+      sorted.sort((a, b) => a.price - b.price);
+    } else if (sortBy === "priceHighToLow") {
+      sorted.sort((a, b) => b.price - a.price);
+    } else if (sortBy === "nameAZ") {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === "nameZA") {
+      sorted.sort((a, b) => b.name.localeCompare(a.name));
+    }
+    return sorted;
+  }, [products, sortBy]);
 
   // Load products from backend
   useEffect(() => {
@@ -149,9 +167,11 @@ const AdminProductsPage: React.FC = () => {
         </div>
       )}
 
+      <ProductSortDropdown sortBy={sortBy} onSortChange={setSortBy} />
+
       {/* Product grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
+        {sortedProducts.map((product) => (
           <Card key={product.id} className="p-4">
             <h2 className="text-lg font-bold">{product.name}</h2>
             {product.image && (
