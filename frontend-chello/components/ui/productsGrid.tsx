@@ -133,7 +133,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           <DialogTrigger asChild>
             <Button
               variant="default"
-              size="xs"
+              size="sm"
               className="flex-1 text-[0.65rem] xs:text-xs sm:text-sm"
               disabled={product.stock === 0 || !localStorage.getItem('token')}
             >
@@ -174,7 +174,7 @@ const ProductCard = ({ product }: { product: Product }) => {
                 <div className="flex items-center gap-2 mt-2">
                   <Button
                     variant="outline"
-                    size="xs"
+                    size="sm"
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity <= 1}
                     className="text-[0.65rem] xs:text-xs sm:text-sm"
@@ -184,7 +184,7 @@ const ProductCard = ({ product }: { product: Product }) => {
                   <span className="text-sm sm:text-base">{quantity}</span>
                   <Button
                     variant="outline"
-                    size="xs"
+                    size="sm"
                     onClick={() => handleQuantityChange(1)}
                     disabled={quantity >= product.stock}
                     className="text-[0.65rem] xs:text-xs sm:text-sm"
@@ -228,7 +228,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             </div>
           </DialogContent>
         </Dialog>
-        <Button variant="secondary" size="xs" className="flex-1 text-[0.65rem] xs:text-xs sm:text-sm">
+        <Button variant="secondary" size="sm" className="flex-1 text-[0.65rem] xs:text-xs sm:text-sm">
           Add to Cart
         </Button>
       </div>
