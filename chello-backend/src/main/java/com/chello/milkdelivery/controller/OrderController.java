@@ -48,6 +48,10 @@ public class OrderController {
         }
         order.setTotal(placeOrderDto.getTotal());
 
+        order.setFulfillmentMethod(placeOrderDto.getFulfillmentMethod());//saving the method of fulfillment
+        order.setPickupLocation(placeOrderDto.getPickupLocation());//saving the pickup location
+        order.setDeliverySchedule(placeOrderDto.getDeliverySchedule());//saving the delivery schedule
+
         Order savedOrder = orderRepository.save(order);
         return ResponseEntity.status(201).body(savedOrder);
     }
