@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,11 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 type Driver = {
   id: string;
@@ -35,82 +29,41 @@ type Delivery = {
   assignedDriver?: string;
 };
 
-const mockDrivers: Driver[] = [
-  {
-    id: "1",
-    name: "John Diggle",
-    status: "Available",
-    region: "North",
-    rating: 4.5,
-    completedDeliveries: 120,
-  },
-  {
-    id: "2",
-    name: "Oliver Queen",
-    status: "Busy",
-    region: "East",
-    rating: 4.8,
-    completedDeliveries: 200,
-  },
-  {
-    id: "3",
-    name: "Demian Dark",
-    status: "Available",
-    region: "South",
-    rating: 4.3,
-    completedDeliveries: 95,
-  },
-];
-
-const mockDeliveries: Delivery[] = [
-  {
-    id: "d1",
-    customer: "Barry Allen",
-    region: "North",
-    status: "Unassigned",
-  },
-  {
-    id: "d2",
-    customer: "Iris West",
-    region: "South",
-    status: "Unassigned",
-  },
-  {
-    id: "d3",
-    customer: "Cisco Ramon",
-    region: "East",
-    status: "Assigned",
-    assignedDriver: "Oliver Queen",
-  },
-];
-
-export default function DeliveryDriversDashboard() {
+export default function CustomerDashboard() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>("");
 
   useEffect(() => {
-    setDrivers(mockDrivers);
-    setDeliveries(mockDeliveries);
+    // Fetch drivers data from your API
+    const fetchDrivers = async () => {
+      try {
+        const response = await fetch("/api/drivers"); // Replace with your actual API endpoint
+        const data = await response.json();
+        setDrivers(data);
+      } catch (error) {
+        console.error("Error fetching drivers:", error);
+      }
+    };
+
+    // Fetch deliveries data from your API
+    const fetchDeliveries = async () => {
+      try {
+        const response = await fetch("/api/deliveries"); // Replace with your actual API endpoint
+        const data = await response.json();
+        setDeliveries(data);
+      } catch (error) {
+        console.error("Error fetching deliveries:", error);
+      }
+    };
+
+    fetchDrivers();
+    fetchDeliveries();
   }, []);
 
   const filteredDrivers = filterStatus
     ? drivers.filter((driver) => driver.status === filterStatus)
     : drivers;
-
-  const handleAssign = (deliveryId: string, driverName: string) => {
-    setDeliveries((prev) =>
-      prev.map((del) =>
-        del.id === deliveryId
-          ? {
-              ...del,
-              status: "Assigned",
-              assignedDriver: driverName,
-            }
-          : del
-      )
-    );
-  };
 
   return (
     <div className="p-6 space-y-6">
@@ -152,43 +105,6 @@ export default function DeliveryDriversDashboard() {
                 >
                   {driver.status}
                 </Badge>
-
-                {driver.status === "Available" ? (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button size="sm">Assign Delivery</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <h3 className="text-lg font-semibold mb-2">Assign a Delivery</h3>
-                      <ul className="space-y-2">
-                        {deliveries.filter((d) => d.status === "Unassigned").map((delivery) => (
-                          <li
-                            key={delivery.id}
-                            className="flex justify-between items-center border p-2 rounded-md"
-                          >
-                            <div>
-                              <p className="font-medium">{delivery.customer}</p>
-                              <p className="text-sm text-muted-foreground">Region: {delivery.region}</p>
-                            </div>
-                            <Button
-                              size="sm"
-                              onClick={() => handleAssign(delivery.id, driver.name)}
-                            >
-                              Assign
-                            </Button>
-                          </li>
-                        ))}
-                        {deliveries.filter((d) => d.status === "Unassigned").length === 0 && (
-                          <p className="text-sm text-muted-foreground">No unassigned deliveries.</p>
-                        )}
-                      </ul>
-                    </DialogContent>
-                  </Dialog>
-                ) : (
-                  <Button size="sm" disabled>
-                    Assign Delivery
-                  </Button>
-                )}
               </div>
             </CardContent>
           </Card>

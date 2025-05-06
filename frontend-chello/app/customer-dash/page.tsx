@@ -6,16 +6,9 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { User, Mail, Truck } from "lucide-react"
+import { User, Mail,Truck, PackageOpen, ArrowRight, MapPin, MessageSquareText } from "lucide-react"
 import { Caveat } from 'next/font/google'
-import { 
-    
-    PackageOpen, 
-    ArrowRight, 
-    MapPin, 
-    MessageSquareText,
-    
-  } from "lucide-react"
+
 
 const caveat = Caveat({ subsets: ['latin'] })
 
@@ -131,8 +124,7 @@ function DeliveryCard({ title, products, total }: {
     )
 }
 
-// Add these imports at the top of your file:
-// import { Truck, PackageOpen, ArrowRight, MapPin, MessageSquareText } from "lucide-react"
+
 
 export default function Dashboard() {
     const router = useRouter()

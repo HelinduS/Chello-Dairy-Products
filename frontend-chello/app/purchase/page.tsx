@@ -23,6 +23,32 @@ export default function Page() {
     }
   };
 
+  const handleSave = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/delivery/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username, // Replace with actual username from session or context
+          deliveryMethod,
+          address,
+          availability,
+        }),
+      });
+  
+      if (res.ok) {
+        alert("Delivery details updated successfully.");
+      } else {
+        alert("Failed to update delivery details.");
+      }
+    } catch (error) {
+      console.error("Error updating delivery details:", error);
+      alert("Something went wrong while saving changes.");
+    }
+  };
+
   return (
     <div className="grid gap-6  max-w-4xl mx-auto">
      
@@ -144,6 +170,13 @@ export default function Page() {
           </CardContent>
         </Card>
       )}
+      <Button
+        className="w-full"
+        onClick={handleSave}
+        disabled={orderCancelled}
+      >   
+        Save Changes
+      </Button>
     </div>
   );
 }

@@ -36,4 +36,17 @@ public class CustomerProduct {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    // NEW FIELDS
+    @Column(name = "delivery_method")
+    private String deliveryMethod; // e.g., "delivery" or "pickup"
+
+    @Column(name = "delivery_address")
+    private String deliveryAddress;
+
+    @Column(name = "availability")
+    private String availability; // Can be a time window like "8am–10am"
+
+    @Column(name = "cancelled")
+    private boolean cancelled = false;
 }
