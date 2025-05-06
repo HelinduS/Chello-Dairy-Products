@@ -1,5 +1,6 @@
 package com.chello.milkdelivery.service;
 
+import com.chello.milkdelivery.dto.DeliveryUpdateRequest;
 import com.chello.milkdelivery.model.CustomerProduct;
 import com.chello.milkdelivery.model.Product;
 import com.chello.milkdelivery.repository.CustomerProductRepository;
@@ -54,6 +55,25 @@ public class DeliveryService {
         }
 
         return new ArrayList<>(productMap.values());
+    }
+
+    public void updateDelivery(String username, DeliveryUpdateRequest request) {
+        List<CustomerProduct> deliveries = customerProductRepository.findAllByUsername(username);
+
+        for (CustomerProduct cp : deliveries) {
+            cp.setDeliveryMethod(request.getMethod());
+            cp.setDeliveryAddress(request.getAddress());
+            cp.setAvailability(request.getAvailability());
+            customerProductRepository.save(cp);
+        }
+    }
+
+    public void cancelDelivery(String username) {
+        List<CustomerProduct> deliveries = customerProductRepository.findAllByUsername(username);
+        for (CustomerProduct cp : deliveries) {
+            cp.setCancelled(true);
+            customerProductRepository.save(cp);
+        }
     }
 
     private Double calculateTotal(List<CustomerProduct> deliveries) {

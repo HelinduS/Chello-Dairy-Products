@@ -35,7 +35,12 @@ const PURCHASE_API_URL = 'http://localhost:8080/api/customer-products';
 const FAVORITES_API_URL = 'http://localhost:8080/api/customer-products/favorites';
 const DEFAULT_IMAGE = '/images/placeholder.jpg';
 
-const ProductCard = ({ product }: { product: Product }) => {
+interface ProductCardProps {
+  product: Product;
+  onOrderSuccess: () => void;
+}
+
+const ProductCard = ({ product, onOrderSuccess }: ProductCardProps) => {
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [deliveryDays, setDeliveryDays] = useState<string[]>([]);
@@ -103,6 +108,10 @@ const ProductCard = ({ product }: { product: Product }) => {
       setQuantity(1);
       setDeliveryDays([]);
       setError(null);
+      
+      // Call the callback to refresh products
+      onOrderSuccess();
+      
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -293,6 +302,15 @@ const ProductGrid = ({ isFavoritesSection, sortBy = 'default' }: ProductGridProp
     }
   };
 
+  const handleOrderSuccess = () => {
+    // Refresh product data after successful order
+    if (isFavoritesSection) {
+      fetchFavoriteProducts();
+    } else {
+      fetchProducts();
+    }
+  };
+
   useEffect(() => {
     if (isFavoritesSection) {
       fetchFavoriteProducts();
@@ -363,7 +381,11 @@ const ProductGrid = ({ isFavoritesSection, sortBy = 'default' }: ProductGridProp
   return (
     <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 xs:gap-4 sm:gap-5">
       {displayProducts.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard 
+          key={product.id} 
+          product={product} 
+          onOrderSuccess={handleOrderSuccess}
+        />
       ))}
     </div>
   );
