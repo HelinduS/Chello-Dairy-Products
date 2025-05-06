@@ -1,6 +1,7 @@
 package com.chello.milkdelivery.dto;
 
 
+import com.chello.milkdelivery.model.Order;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -22,6 +23,13 @@ public class PlaceOrderDto {
     @NotNull
     @Positive
     private double total;
+
+    // ✅ New Fields for Fulfillment Method
+    @NotNull
+    private Order.FulfillmentMethod fulfillmentMethod;  // "DELIVERY" or "PICKUP"
+
+    private String pickupLocation;  // Required if PICKUP
+    private String deliverySchedule;  // Required if DELIVERY
 
     // Getters and Setters
     public String getCustomerName() {
@@ -55,4 +63,29 @@ public class PlaceOrderDto {
     public void setTotal(double total) {
         this.total = total;
     }
+
+    public Order.FulfillmentMethod getFulfillmentMethod() {
+        return fulfillmentMethod;
+    }
+
+    public void setFulfillmentMethod(Order.FulfillmentMethod fulfillmentMethod) {
+        this.fulfillmentMethod = fulfillmentMethod;
+    }
+
+    public String getPickupLocation() {
+        return pickupLocation;
+    }
+
+    public void setPickupLocation(String pickupLocation) {
+        this.pickupLocation = pickupLocation;
+    }
+
+    public String getDeliverySchedule() {
+        return deliverySchedule;
+    }
+
+    public void setDeliverySchedule(String deliverySchedule) {
+        this.deliverySchedule = deliverySchedule;
+    }
+
 }

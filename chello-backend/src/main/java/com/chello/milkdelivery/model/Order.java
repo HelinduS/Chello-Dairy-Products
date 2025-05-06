@@ -38,7 +38,20 @@ public class Order {
 
     private LocalDateTime deliveredDate; // New field for delivery time tracking
 
+    @Enumerated(EnumType.STRING) //to store as clear text
+    private FulfillmentMethod fulfillmentMethod; //whether order is delivery or pickup
+
+    private String pickupLocation;
+
+    private String deliverySchedule;
+
     public enum Status {
         Pending, Processing, Shipped, Delivered, Canceled
     }
+
+    public enum FulfillmentMethod {
+        DELIVERY,
+        PICKUP
+    }
+
 }
