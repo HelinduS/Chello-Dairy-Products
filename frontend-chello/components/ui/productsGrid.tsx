@@ -46,6 +46,8 @@ const ProductCard = ({ product, onOrderSuccess }: ProductCardProps) => {
   const [deliveryDays, setDeliveryDays] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [deliveryMethod, setDeliveryMethod] = useState<'Delivery' | 'Pickup'>('Delivery');
+
 
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => {
@@ -63,15 +65,16 @@ const ProductCard = ({ product, onOrderSuccess }: ProductCardProps) => {
   };
 
   const handleConfirm = async () => {
-    if (deliveryDays.length === 0) {
+    if (deliveryMethod === 'Delivery' && deliveryDays.length === 0) {
       setError('Please select at least one delivery day.');
       return;
     }
 
-    const purchaseData: PurchaseData = {
+    const purchaseData: any = {
       productId: product.id,
       quantity,
-      deliveryDay: deliveryDays.sort().join(','),
+      deliveryMethod,
+      deliveryDay: deliveryMethod === 'Delivery' ? deliveryDays.sort().join(',') : null,
       amount: quantity * product.price,
     };
 
@@ -154,9 +157,40 @@ const ProductCard = ({ product, onOrderSuccess }: ProductCardProps) => {
               <DialogTitle className="text-base sm:text-lg">Purchase {product.name}</DialogTitle>
             </DialogHeader>
             <p id="purchase-dialog-description" className="text-xs sm:text-sm text-muted-foreground mt-1">
-              Select delivery day(s) and quantity (Available stock: {product.stock}).
+              Select delivery method, delivery day(s), and quantity (Available stock: {product.stock}).
             </p>
+
+            {/* Delivery Method */}
+            <div className="mt-4">
+              <Label className="text-sm sm:text-base">Delivery Method</Label>
+              <div className="flex gap-4 mt-2">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="delivery"
+                    name="deliveryMethod"
+                    value="Delivery"
+                    checked={deliveryMethod === 'Delivery'}
+                    onChange={() => setDeliveryMethod('Delivery')}
+                  />
+                  <Label htmlFor="delivery" className="text-xs sm:text-sm">Delivery</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="pickup"
+                    name="deliveryMethod"
+                    value="Pickup"
+                    checked={deliveryMethod === 'Pickup'}
+                    onChange={() => setDeliveryMethod('Pickup')}
+                  />
+                  <Label htmlFor="pickup" className="text-xs sm:text-sm">Pickup</Label>
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-4 mt-4">
+            {deliveryMethod === 'Delivery' && (
               <div>
                 <Label className="text-sm sm:text-base">Delivery Day(s)</Label>
                 <div className="flex flex-col sm:flex-row gap-4 mt-2">
@@ -178,6 +212,7 @@ const ProductCard = ({ product, onOrderSuccess }: ProductCardProps) => {
                   </div>
                 </div>
               </div>
+            )}
               <div>
                 <Label className="text-sm sm:text-base">Quantity</Label>
                 <div className="flex items-center gap-2 mt-2">
@@ -227,6 +262,7 @@ const ProductCard = ({ product, onOrderSuccess }: ProductCardProps) => {
                   setOpen(false);
                   setQuantity(1);
                   setDeliveryDays([]);
+                  setDeliveryMethod('Delivery');
                   setError(null);
                   setSuccess(null);
                 }}
