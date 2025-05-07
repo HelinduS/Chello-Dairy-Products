@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, Truck, X, RefreshCw } from "lucide-react";
+import { MapPin, Truck, X, RefreshCw, ArrowLeft } from "lucide-react";
 
 export default function Page() {
   const router = useRouter();
@@ -15,6 +15,8 @@ export default function Page() {
   const [availability, setAvailability] = useState("9am - 5pm");
   const [deliveryStatus, setDeliveryStatus] = useState("Preparing for shipment");
   const [orderCancelled, setOrderCancelled] = useState(false);
+  // Add the missing username state
+  const [username, setUsername] = useState(""); // You can set a default value if needed
 
   const cancelOrder = () => {
     if (deliveryStatus === "Preparing for shipment") {
@@ -31,7 +33,7 @@ export default function Page() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username, // Replace with actual username from session or context
+          username, // Now username is properly defined
           deliveryMethod,
           address,
           availability,
@@ -50,21 +52,19 @@ export default function Page() {
   };
 
   return (
-    <div className="grid gap-6  max-w-4xl mx-auto">
+    <div className="grid gap-6 max-w-4xl mx-auto">
      
       <div className="flex justify-between items-center mt-6">
-        <Button  onClick={() => router.push("/customer-dash")}>
-          back
+        <Button onClick={() => router.push("/customer-dash")}>
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        <h1 className="text-4xl font-bold ">set deleivery</h1>
-
+        <h1 className="text-4xl font-bold">Set Delivery</h1>
       </div>
     
       <Card>
         <CardContent className="p-6 flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <span className="text-2xl font-medium">Delivery Method</span>
-           
           </div>
           <div className="flex gap-6">
             <label className="flex items-center gap-2">
@@ -108,30 +108,29 @@ export default function Page() {
         </Card>
       )}
 
-{deliveryMethod === "delivery" ? (
-  <Card>
-    <CardContent className="p-4 flex flex-col gap-4">
-      <label className="font-medium">Home Availability</label>
-      <Textarea
-        placeholder="E.g., Mon–Fri, 9am to 5pm"
-        value={availability}
-        onChange={(e) => setAvailability(e.target.value)}
-      />
-    </CardContent>
-  </Card>
-) : (
-  <Card>
-    <CardContent className="p-4 flex flex-col gap-4">
-      <label className="font-medium">Pickup Date & Time</label>
-      <Input
-        type="datetime-local"
-        value={availability}
-        onChange={(e) => setAvailability(e.target.value)}
-      />
-    </CardContent>
-  </Card>
-)}
-
+      {deliveryMethod === "delivery" ? (
+        <Card>
+          <CardContent className="p-4 flex flex-col gap-4">
+            <label className="font-medium">Home Availability</label>
+            <Textarea
+              placeholder="E.g., Mon–Fri, 9am to 5pm"
+              value={availability}
+              onChange={(e) => setAvailability(e.target.value)}
+            />
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="p-4 flex flex-col gap-4">
+            <label className="font-medium">Pickup Date & Time</label>
+            <Input
+              type="datetime-local"
+              value={availability}
+              onChange={(e) => setAvailability(e.target.value)}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent className="p-4 flex flex-col gap-4">

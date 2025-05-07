@@ -20,6 +20,9 @@ public interface CustomerProductRepository extends JpaRepository<CustomerProduct
     @Query("SELECT DISTINCT cp.productId FROM CustomerProduct cp WHERE cp.username = :username")
     Set<Long> findDistinctProductIdsByUsername(String username);
 
+    @Query("SELECT cp FROM CustomerProduct cp WHERE cp.username = :username AND cp.cancelled = false AND cp.deliveryDay = :day")
+    List<CustomerProduct> findDeliveriesByDay(String username, String day);
+
     CustomerProduct findByIdAndUsername(Long id, String username);
 
     List<CustomerProduct> findAllByUsername(String username);
