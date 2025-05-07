@@ -21,8 +21,8 @@ public class DeliveryService {
     private final ProductRepository productRepository;
 
     public Map<String, Object> getDeliveries(String username) {
-        List<CustomerProduct> wednesdayDeliveries = customerProductRepository.findWednesdayDeliveries(username);
-        List<CustomerProduct> sundayDeliveries = customerProductRepository.findSundayDeliveries(username);
+        List<CustomerProduct> wednesdayDeliveries = customerProductRepository.findDeliveriesByDay(username, "Wednesday");
+        List<CustomerProduct> sundayDeliveries = customerProductRepository.findDeliveriesByDay(username, "Sunday");
 
         Map<String, Object> response = new HashMap<>();
         response.put("wednesday", processDeliveries(wednesdayDeliveries));
