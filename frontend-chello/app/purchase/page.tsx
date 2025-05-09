@@ -143,14 +143,7 @@ export default function Page() {
               <Button variant="destructive" onClick={cancelOrder}>
                 <X className="mr-2 h-4 w-4" /> Cancel Order
               </Button>
-              <Button
-                onClick={() =>
-                  setDeliveryMethod(deliveryMethod === "delivery" ? "pickup" : "delivery")
-                }
-                disabled={deliveryStatus !== "Preparing for shipment"}
-              >
-                <RefreshCw className="mr-2 h-4 w-4" /> Change Delivery Method
-              </Button>
+
             </div>
           )}
         </CardContent>
