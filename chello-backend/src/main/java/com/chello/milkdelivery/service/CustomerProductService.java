@@ -1,4 +1,5 @@
-package com.chello.milkdelivery.service;
+
+        package com.chello.milkdelivery.service;
 
 import com.chello.milkdelivery.dto.CustomerProductRequest;
 import com.chello.milkdelivery.model.CustomerProduct;
@@ -46,22 +47,30 @@ public class CustomerProductService {
 
         // Validate delivery day
         String deliveryDay = request.getDeliveryDay();
-        if (deliveryDay == null || deliveryDay.isEmpty()) {
-            throw new IllegalArgumentException("Delivery day is required");
+        if (request.getDeliveryMethod() != null && request.getDeliveryMethod().equals("Delivery") && (deliveryDay == null || deliveryDay.isEmpty())) {
+            throw new IllegalArgumentException("Delivery day is required for Delivery method");
         }
 
-        // Split and validate delivery days
-        Set<String> validDays = new HashSet<>(Arrays.asList("Wednesday", "Sunday"));
-        Set<String> requestedDays = new HashSet<>(Arrays.asList(deliveryDay.split(",")));
-        if (requestedDays.isEmpty() || !validDays.containsAll(requestedDays)) {
-            throw new IllegalArgumentException("Delivery day must be Wednesday, Sunday, or both");
+        // Split and validate delivery days if provided
+        if (deliveryDay != null && !deliveryDay.isEmpty()) {
+            Set<String> validDays = new HashSet<>(Arrays.asList("Wednesday", "Sunday"));
+            Set<String> requestedDays = new HashSet<>(Arrays.asList(deliveryDay.split(",")));
+            if (requestedDays.isEmpty() || !validDays.containsAll(requestedDays)) {
+                throw new IllegalArgumentException("Delivery day must be Wednesday, Sunday, or both");
+            }
+
+            // Normalize deliveryDay
+            if (requestedDays.size() == 2) {
+                deliveryDay = "Wednesday,Sunday";
+            } else if (!deliveryDay.equals("Wednesday") && !deliveryDay.equals("Sunday")) {
+                throw new IllegalArgumentException("Delivery day must be Wednesday, Sunday, or both");
+            }
         }
 
-        // Ensure deliveryDay matches one of the allowed formats
-        if (requestedDays.size() == 2) {
-            deliveryDay = "Wednesday,Sunday"; // Normalize to match database
-        } else if (!deliveryDay.equals("Wednesday") && !deliveryDay.equals("Sunday")) {
-            throw new IllegalArgumentException("Delivery day must be Wednesday, Sunday, or both");
+        // Validate payment status
+        String paymentStatus = request.getPaymentStatus();
+        if (paymentStatus == null || (!paymentStatus.equals("pending") && !paymentStatus.equals("payed"))) {
+            throw new IllegalArgumentException("Payment status must be 'pending' or 'payed'");
         }
 
         // Deduct stock
@@ -74,13 +83,16 @@ public class CustomerProductService {
                 .productId(request.getProductId())
                 .quantity(request.getQuantity())
                 .deliveryDay(deliveryDay)
-                .amount(request.getQuantity() * product.getPrice())
+                .amount(request.getAmount()) // Use request amount
                 .createdAt(LocalDateTime.now())
+                .deliveryMethod(request.getDeliveryMethod())
+                .paymentStatus(paymentStatus)
                 .build();
 
         // Save to database
         return customerProductRepository.save(customerProduct);
     }
+
     public List<Product> getCustomerFavoriteProducts() {
         // Extract username from JWT token
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
