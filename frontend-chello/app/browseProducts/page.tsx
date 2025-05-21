@@ -10,7 +10,7 @@ const BrowseProductsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ✅ Fixed Navbar */}
+      {/* Fixed Navbar */}
       <nav className="bg-blue-700 text-white px-4 py-3 shadow-sm fixed top-0 left-0 w-full z-50">
         <div className="flex items-center justify-between max-w-[95vw] sm:max-w-[90vw] mx-auto">
           <div className="text-xl sm:text-2xl font-bold">🧀 chello.dairy</div>
@@ -30,7 +30,7 @@ const BrowseProductsPage = () => {
         </div>
       </nav>
 
-      {/* 🧱 Spacer to push content below fixed navbar */}
+      {/* Spacer to push content below fixed navbar */}
       <div className="h-16" />
 
       {/* 🏷️ Page Header */}
@@ -44,7 +44,7 @@ const BrowseProductsPage = () => {
 
       {/* 📦 Main Content */}
       <main className="mx-auto w-full max-w-[95vw] sm:max-w-[90vw] py-4 sm:py-6 px-3 sm:px-4 lg:px-6">
-        {/* ❤️ Favorites Section */}
+        {/* Favorites Section */}
         <section className="mb-6 sm:mb-8 lg:mb-10">
           <h2 className="text-lg xs:text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
             Your Favorites
@@ -52,7 +52,7 @@ const BrowseProductsPage = () => {
           <ProductGrid isFavoritesSection={true} />
         </section>
 
-        {/* 🛍️ All Products Section */}
+        {/* All Products Section */}
         <section>
           <div className="flex justify-between items-center mb-3 sm:mb-4">
             <h2 className="text-lg xs:text-xl sm:text-2xl font-bold text-gray-900">
