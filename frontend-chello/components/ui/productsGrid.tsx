@@ -32,9 +32,10 @@ const DEFAULT_IMAGE = "/images/placeholder.jpg";
 interface ProductCardProps {
   product: Product;
   onOrderSuccess: () => void;
+  compact?: boolean;
 }
 
-const ProductCard = ({ product, onOrderSuccess }: ProductCardProps) => {
+const ProductCard = ({ product, onOrderSuccess, compact = false }: ProductCardProps) => {
   const { addToCart } = useCart();
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -104,21 +105,16 @@ const ProductCard = ({ product, onOrderSuccess }: ProductCardProps) => {
   const imageSrc = product.image && product.image.trim() !== "" ? product.image : DEFAULT_IMAGE;
 
   return (
-    <div className="flex flex-col bg-white border rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
-      <div className="relative w-full h-40">
-        <Image
-          src={imageSrc}
-          alt={product.name}
-          fill
-          className="object-contain"
-        />
+    <div className={`flex flex-col bg-white border rounded-lg shadow-sm ${compact ? 'p-2' : 'p-4'} hover:shadow-md transition-shadow`}>
+      <div className={`relative w-full ${compact ? 'h-28' : 'h-40'}`}>
+        <Image src={imageSrc} alt={product.name} fill className="object-contain" />
       </div>
-      <div className="mt-3 flex-grow">
-        <h2 className="text-sm font-semibold">{product.name}</h2>
-        <p className="text-xs text-gray-600">Rs. {product.price}</p>
-        <p className="text-xs text-gray-600">Stock: {product.stock}</p>
+      <div className={`mt-2 flex-grow ${compact ? 'text-xs' : 'text-sm'}`}>
+        <h2 className="font-semibold">{product.name}</h2>
+        <p className="text-gray-600">Rs. {product.price}</p>
+        <p className="text-gray-600">Stock: {product.stock}</p>
       </div>
-      <div className="mt-3 flex gap-2">
+      <div className="mt-2 flex gap-2">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button variant="default" size="sm" disabled={product.stock === 0}>
@@ -165,7 +161,6 @@ const ProductCard = ({ product, onOrderSuccess }: ProductCardProps) => {
             </div>
           </DialogContent>
         </Dialog>
-
         <div className="flex flex-col flex-1 space-y-1">
           <Button
             variant="secondary"
@@ -208,7 +203,6 @@ const ProductGrid = ({ isFavoritesSection, sortBy = "default" }: ProductGridProp
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      setError(null);
       const res = await fetch(API_URL);
       if (!res.ok) throw new Error("Failed to fetch products");
       const data: Product[] = await res.json();
@@ -253,10 +247,39 @@ const ProductGrid = ({ isFavoritesSection, sortBy = "default" }: ProductGridProp
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
-  return (
+  return isFavoritesSection ? (
+    <div className="relative">
+      <button
+        onClick={() =>
+          document.getElementById("favorites-scroll")?.scrollBy({ left: -200, behavior: "smooth" })
+        }
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/70 px-2 py-1 rounded-full shadow hover:bg-white"
+      >
+        ◀
+      </button>
+      <button
+        onClick={() =>
+          document.getElementById("favorites-scroll")?.scrollBy({ left: 200, behavior: "smooth" })
+        }
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/70 px-2 py-1 rounded-full shadow hover:bg-white"
+      >
+        ▶
+      </button>
+      <div
+        id="favorites-scroll"
+        className="flex gap-4 overflow-x-auto no-scrollbar px-6 py-2 scroll-smooth"
+      >
+        {displayProducts.map((product) => (
+          <div key={product.id} className="flex-shrink-0 w-48">
+            <ProductCard product={product} onOrderSuccess={fetchFavoriteProducts} compact />
+          </div>
+        ))}
+      </div>
+    </div>
+  ) : (
     <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       {displayProducts.map((product) => (
-        <ProductCard key={product.id} product={product} onOrderSuccess={() => isFavoritesSection ? fetchFavoriteProducts() : fetchProducts()} />
+        <ProductCard key={product.id} product={product} onOrderSuccess={fetchProducts} />
       ))}
     </div>
   );
