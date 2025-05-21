@@ -12,4 +12,7 @@ public class CustomerProductRequest {
     private Integer quantity;
     private String deliveryDay;
     private Double amount;
+    private String deliveryMethod; // e.g., "Delivery" or "Pickup"
+    private String paymentStatus; // e.g., "pending" or "payed"
+
 }

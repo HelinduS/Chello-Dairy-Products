@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect, useState } from "react"
@@ -6,8 +7,9 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { User, Mail, Truck, PackageOpen, ArrowRight, MapPin, MessageSquareText } from "lucide-react"
+import { User, Mail, Truck, PackageOpen, ArrowRight, MessageSquareText } from "lucide-react"
 import { Caveat } from 'next/font/google'
+import { MapCard } from "@/components/ui/MapCard"
 
 const caveat = Caveat({ subsets: ['latin'] })
 
@@ -33,21 +35,31 @@ const decodeJwt = (token: string) => {
     }
 }
 
-function DeliveryCard({ title, products, total }: {
+function DeliveryCard({
+    title,
+    payedProducts,
+    pendingProducts,
+    payedTotal,
+    pendingTotal,
+    onChangeLocation
+}: {
     title: string;
-    products: { name: string; quantity: number; image: string; totalPrice: number }[];
-    total: number;
+    payedProducts: { name: string; quantity: number; image: string; totalPrice: number }[];
+    pendingProducts: { name: string; quantity: number; image: string; totalPrice: number }[];
+    payedTotal: number;
+    pendingTotal: number;
+    onChangeLocation: (day: "Wednesday" | "Sunday") => void;
 }) {
     return (
         <Card className="w-full max-w-2xl bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
             <CardHeader className="bg-gray-100 px-6 py-4 border-b border-gray-100">
                 <CardTitle className="text-2xl font-bold text-gray-800 flex items-center">
                     <Truck className="w-6 h-6 mr-2 text-black-600" />
-                    {title}
+                    {title} Deliveries
                 </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-                {products.length === 0 ? (
+                {payedProducts.length === 0 && pendingProducts.length === 0 ? (
                     <div className="text-center py-8">
                         <PackageOpen className="w-12 h-12 mx-auto text-gray-300 mb-4" />
                         <p className="text-gray-500 text-lg">No deliveries scheduled</p>
@@ -59,35 +71,86 @@ function DeliveryCard({ title, products, total }: {
                     </div>
                 ) : (
                     <>
-                        <ul className="space-y-4 divide-y divide-gray-100">
-                            {products.map((product, index) => (
-                                <li key={`${product.name}-${index}`} className="flex items-center gap-4 py-4 animate-fade-in">
-                                    <div className="relative flex-shrink-0">
-                                        <Image
-                                            src={product.image || "/images/placeholder.jpg"}
-                                            alt={product.name}
-                                            width={120}
-                                            height={120}
-                                            className="object-cover rounded-lg border border-gray-200 bg-white p-1"
-                                        />
-                                        <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
-                                            {product.quantity}
-                                        </span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-lg font-semibold text-gray-900 truncate">{product.name}</p>
-                                        <div className="flex justify-between items-center mt-1">
-                                            <p className="text-sm text-gray-500">Rs. {(product.totalPrice / product.quantity).toFixed(2)} each</p>
-                                            <p className="text-base font-medium text-gray-900">Rs. {product.totalPrice.toFixed(2)}</p>
-                                        </div>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
+                        {/* Payed Section */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2">Payed</h3>
+                            {payedProducts.length === 0 ? (
+                                <p className="text-gray-500 text-sm">No payed deliveries</p>
+                            ) : (
+                                <ul className="space-y-4 divide-y divide-gray-100">
+                                    {payedProducts.map((product, index) => (
+                                        <li key={`${product.name}-${index}-payed`} className="flex items-center gap-4 py-4 animate-fade-in">
+                                            <div className="relative flex-shrink-0">
+                                                <Image
+                                                    src={product.image || "/images/placeholder.jpg"}
+                                                    alt={product.name}
+                                                    width={120}
+                                                    height={120}
+                                                    className="object-cover rounded-lg border border-gray-200 bg-white p-1"
+                                                />
+                                                <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                                                    {product.quantity}
+                                                </span>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-lg font-semibold text-gray-900 truncate">{product.name}</p>
+                                                <div className="flex justify-between items-center mt-1">
+                                                    <p className="text-sm text-gray-500">Rs. {(product.totalPrice / product.quantity).toFixed(2)} each</p>
+                                                    <p className="text-base font-medium text-gray-900">Rs. {product.totalPrice.toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+
+                        {/* Pending Section */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2">Pending</h3>
+                            {pendingProducts.length === 0 ? (
+                                <p className="text-gray-500 text-sm">No pending deliveries</p>
+                            ) : (
+                                <ul className="space-y-4 divide-y divide-gray-100">
+                                    {pendingProducts.map((product, index) => (
+                                        <li key={`${product.name}-${index}-pending`} className="flex items-center gap-4 py-4 animate-fade-in">
+                                            <div className="relative flex-shrink-0">
+                                                <Image
+                                                    src={product.image || "/images/placeholder.jpg"}
+                                                    alt={product.name}
+                                                    width={120}
+                                                    height={120}
+                                                    className="object-cover rounded-lg border border-gray-200 bg-white p-1"
+                                                />
+                                                <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                                                    {product.quantity}
+                                                </span>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-lg font-semibold text-gray-900 truncate">{product.name}</p>
+                                                <div className="flex justify-between items-center mt-1">
+                                                    <p className="text-sm text-gray-500">Rs. {(product.totalPrice / product.quantity).toFixed(2)} each</p>
+                                                    <p className="text-base font-medium text-gray-900">Rs. {product.totalPrice.toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+
                         <div className="mt-6 pt-4 border-t border-gray-200">
+                            <div className="flex justify-between items-center">
+                                <span className="text-lg font-medium text-gray-900">Payed Total</span>
+                                <span className="text-lg font-medium text-indigo-600">Rs. {payedTotal.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between items-center mt-2">
+                                <span className="text-lg font-medium text-gray-900">Pending Total</span>
+                                <span className="text-lg font-medium text-indigo-600">Rs. {pendingTotal.toFixed(2)}</span>
+                            </div>
                             <div className="flex justify-between items-center mt-4 pt-2 border-t border-gray-200">
                                 <span className="text-xl font-bold text-gray-900">Total</span>
-                                <span className="text-xl font-bold text-indigo-600">Rs. {total.toFixed(2)}</span>
+                                <span className="text-xl font-bold text-indigo-600">Rs. {(payedTotal + pendingTotal).toFixed(2)}</span>
                             </div>
                         </div>
                         <div className="mt-6 grid grid-cols-2 gap-4">
@@ -95,10 +158,11 @@ function DeliveryCard({ title, products, total }: {
                                 <MessageSquareText className="w-5 h-5" />
                                 Contact
                             </Button>
-                            <Button className="py-3 text-base font-medium text-white bg-gray-800 hover:bg-gray-600 flex items-center justify-center gap-2">
-                                <Link href="/change-location" className="flex items-center">
-                                    Change Location
-                                </Link>
+                            <Button
+                                className="py-3 text-base font-medium text-white bg-gray-800 hover:bg-gray-600 flex items-center justify-center gap-2"
+                                onClick={() => onChangeLocation(title as "Wednesday" | "Sunday")}
+                            >
+                                Change Location
                             </Button>
                         </div>
                     </>
@@ -112,11 +176,17 @@ export default function Dashboard() {
     const router = useRouter()
     const [user, setUser] = useState<{ username?: string } | null>(null)
     const [deliveries, setDeliveries] = useState<{
-        wednesday: { name: string; quantity: number; image: string; totalPrice: number }[];
-        sunday: { name: string; quantity: number; image: string; totalPrice: number }[];
-        wednesdayTotal: number;
-        sundayTotal: number;
+        wednesdayPayed: { name: string; quantity: number; image: string; totalPrice: number }[];
+        wednesdayPending: { name: string; quantity: number; image: string; totalPrice: number }[];
+        sundayPayed: { name: string; quantity: number; image: string; totalPrice: number }[];
+        sundayPending: { name: string; quantity: number; image: string; totalPrice: number }[];
+        wednesdayPayedTotal: number;
+        wednesdayPendingTotal: number;
+        sundayPayedTotal: number;
+        sundayPendingTotal: number;
     } | null>(null)
+    const [isMapOpen, setIsMapOpen] = useState(false)
+    const [selectedDay, setSelectedDay] = useState<"Wednesday" | "Sunday" | null>(null)
 
     useEffect(() => {
         const token = localStorage.getItem("token")
@@ -147,6 +217,11 @@ export default function Dashboard() {
     const handleLogout = () => {
         localStorage.removeItem("token")
         router.push("/login")
+    }
+
+    const handleChangeLocation = (day: "Wednesday" | "Sunday") => {
+        setSelectedDay(day)
+        setIsMapOpen(true)
     }
 
     if (!user) {
@@ -212,13 +287,19 @@ export default function Dashboard() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <DeliveryCard
                                     title="Wednesday"
-                                    products={deliveries.wednesday}
-                                    total={deliveries.wednesdayTotal}
+                                    payedProducts={deliveries.wednesdayPayed}
+                                    pendingProducts={deliveries.wednesdayPending}
+                                    payedTotal={deliveries.wednesdayPayedTotal}
+                                    pendingTotal={deliveries.wednesdayPendingTotal}
+                                    onChangeLocation={handleChangeLocation}
                                 />
                                 <DeliveryCard
                                     title="Sunday"
-                                    products={deliveries.sunday}
-                                    total={deliveries.sundayTotal}
+                                    payedProducts={deliveries.sundayPayed}
+                                    pendingProducts={deliveries.sundayPending}
+                                    payedTotal={deliveries.sundayPayedTotal}
+                                    pendingTotal={deliveries.sundayPendingTotal}
+                                    onChangeLocation={handleChangeLocation}
                                 />
                             </div>
                         ) : (
@@ -227,6 +308,13 @@ export default function Dashboard() {
                     </div>
                 </main>
             </div>
+            {isMapOpen && selectedDay && (
+                <MapCard
+                    isOpen={isMapOpen}
+                    onClose={() => setIsMapOpen(false)}
+                    deliveryDay={selectedDay}
+                />
+            )}
         </div>
     )
 }

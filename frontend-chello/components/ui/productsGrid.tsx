@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 interface Product {
   id: number;
@@ -38,11 +39,18 @@ interface ProductCardProps {
 const ProductCard = ({ product, onOrderSuccess, compact = false }: ProductCardProps) => {
   const { addToCart } = useCart();
   const [open, setOpen] = useState(false);
+  const [cardDialogOpen, setCardDialogOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [deliveryDays, setDeliveryDays] = useState<string[]>([]);
+  const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
+  const [paymentMethod, setPaymentMethod] = useState<"OnDelivery" | "OnlinePay">("OnDelivery");
+  const [cardDetails, setCardDetails] = useState({
+    cardNumber: "",
+    expiry: "",
+    cvv: "",
+  });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [deliveryMethod, setDeliveryMethod] = useState<"Delivery" | "Pickup">("Delivery");
   const [showCartMessage, setShowCartMessage] = useState(false);
 
   const handleQuantityChange = (delta: number) => {
@@ -55,18 +63,44 @@ const ProductCard = ({ product, onOrderSuccess, compact = false }: ProductCardPr
     );
   };
 
+  const handleCardDetailChange = (field: string, value: string) => {
+    setCardDetails((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleConfirm = async () => {
-    if (deliveryMethod === "Delivery" && deliveryDays.length === 0) {
+    if (deliveryMethod === "delivery" && deliveryDays.length === 0) {
       setError("Please select at least one delivery day.");
       return;
     }
 
+    if (paymentMethod === "OnlinePay") {
+      setCardDialogOpen(true);
+      return;
+    }
+
+    // Handle On Delivery
+    await savePurchase("pending");
+  };
+
+  const handleCardConfirm = async () => {
+    // Basic validation (for demo purposes)
+    if (!cardDetails.cardNumber || !cardDetails.expiry || !cardDetails.cvv) {
+      setError("Please fill in all card details.");
+      return;
+    }
+
+    // Handle Online Pay
+    await savePurchase("payed");
+  };
+
+  const savePurchase = async (paymentStatus: "pending" | "payed") => {
     const purchaseData = {
       productId: product.id,
       quantity,
       deliveryMethod,
-      deliveryDay: deliveryMethod === "Delivery" ? deliveryDays.sort().join(",") : null,
+      deliveryDay: deliveryMethod === "delivery" ? deliveryDays.sort().join(",") : null,
       amount: quantity * product.price,
+      paymentStatus,
     };
 
     try {
@@ -92,8 +126,12 @@ const ProductCard = ({ product, onOrderSuccess, compact = false }: ProductCardPr
 
       setSuccess("Purchase successful!");
       setOpen(false);
+      setCardDialogOpen(false);
       setQuantity(1);
       setDeliveryDays([]);
+      setDeliveryMethod("delivery");
+      setPaymentMethod("OnDelivery");
+      setCardDetails({ cardNumber: "", expiry: "", cvv: "" });
       setError(null);
       onOrderSuccess();
       setTimeout(() => setSuccess(null), 3000);
@@ -128,35 +166,169 @@ const ProductCard = ({ product, onOrderSuccess, compact = false }: ProductCardPr
             <div className="mt-4 space-y-3">
               <Label>Delivery Method</Label>
               <div className="flex gap-4">
-                <label><input type="radio" name="deliveryMethod" value="Delivery" checked={deliveryMethod === "Delivery"} onChange={() => setDeliveryMethod("Delivery")} /> Delivery</label>
-                <label><input type="radio" name="deliveryMethod" value="Pickup" checked={deliveryMethod === "Pickup"} onChange={() => setDeliveryMethod("Pickup")} /> Pickup</label>
+                <label>
+                  <input
+                    type="radio"
+                    name="deliveryMethod"
+                    value="delivery"
+                    checked={deliveryMethod === "delivery"}
+                    onChange={() => setDeliveryMethod("delivery")}
+                  /> Delivery
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="deliveryMethod"
+                    value="Pickup"
+                    checked={deliveryMethod === "pickup"}
+                    onChange={() => setDeliveryMethod("pickup")}
+                  /> Pickup
+                </label>
               </div>
-              {deliveryMethod === "Delivery" && (
+              {deliveryMethod === "delivery" && (
                 <div className="flex gap-4">
-                  <Checkbox id="wednesday" checked={deliveryDays.includes("Wednesday")} onCheckedChange={() => handleDeliveryDayChange("Wednesday")} />
+                  <Checkbox
+                    id="wednesday"
+                    checked={deliveryDays.includes("Wednesday")}
+                    onCheckedChange={() => handleDeliveryDayChange("Wednesday")}
+                  />
                   <Label htmlFor="wednesday">Wednesday</Label>
-                  <Checkbox id="sunday" checked={deliveryDays.includes("Sunday")} onCheckedChange={() => handleDeliveryDayChange("Sunday")} />
+                  <Checkbox
+                    id="sunday"
+                    checked={deliveryDays.includes("Sunday")}
+                    onCheckedChange={() => handleDeliveryDayChange("Sunday")}
+                  />
                   <Label htmlFor="sunday">Sunday</Label>
                 </div>
               )}
+              <Label>Payment Method</Label>
+              <div className="flex gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="OnDelivery"
+                    checked={paymentMethod === "OnDelivery"}
+                    onChange={() => setPaymentMethod("OnDelivery")}
+                  /> On Delivery
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="OnlinePay"
+                    checked={paymentMethod === "OnlinePay"}
+                    onChange={() => setPaymentMethod("OnlinePay")}
+                  /> Online Pay
+                </label>
+              </div>
               <div className="flex items-center gap-2">
-                <Button size="sm" onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1}>-</Button>
+                <Button
+                  size="sm"
+                  onClick={() => handleQuantityChange(-1)}
+                  disabled={quantity <= 1}
+                >
+                  -
+                </Button>
                 <span>{quantity}</span>
-                <Button size="sm" onClick={() => handleQuantityChange(1)} disabled={quantity >= product.stock}>+</Button>
+                <Button
+                  size="sm"
+                  onClick={() => handleQuantityChange(1)}
+                  disabled={quantity >= product.stock}
+                >
+                  +
+                </Button>
               </div>
               <p>Total: Rs. {(quantity * product.price).toFixed(2)}</p>
-              {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
-              {success && <Alert variant="default"><AlertDescription>{success}</AlertDescription></Alert>}
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              {success && (
+                <Alert variant="default">
+                  <AlertDescription>{success}</AlertDescription>
+                </Alert>
+              )}
               <div className="flex gap-2">
-                <Button className="flex-1" onClick={handleConfirm}>Confirm</Button>
-                <Button variant="secondary" className="flex-1" onClick={() => {
-                  setOpen(false);
-                  setQuantity(1);
-                  setDeliveryDays([]);
-                  setDeliveryMethod("Delivery");
-                  setError(null);
-                  setSuccess(null);
-                }}>Cancel</Button>
+                <Button className="flex-1" onClick={handleConfirm}>
+                  Confirm
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => {
+                    setOpen(false);
+                    setQuantity(1);
+                    setDeliveryDays([]);
+                    setDeliveryMethod("delivery");
+                    setPaymentMethod("OnDelivery");
+                    setError(null);
+                    setSuccess(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={cardDialogOpen} onOpenChange={setCardDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Enter Card Details</DialogTitle>
+            </DialogHeader>
+            <div className="mt-4 space-y-3">
+              <div>
+                <Label htmlFor="cardNumber">Card Number</Label>
+                <Input
+                  id="cardNumber"
+                  value={cardDetails.cardNumber}
+                  onChange={(e) => handleCardDetailChange("cardNumber", e.target.value)}
+                  placeholder="1234 5678 9012 3456"
+                />
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <Label htmlFor="expiry">Expiry Date</Label>
+                  <Input
+                    id="expiry"
+                    value={cardDetails.expiry}
+                    onChange={(e) => handleCardDetailChange("expiry", e.target.value)}
+                    placeholder="MM/YY"
+                  />
+                </div>
+                <div className="flex-1">
+                  <Label htmlFor="cvv">CVV</Label>
+                  <Input
+                    id="cvv"
+                    value={cardDetails.cvv}
+                    onChange={(e) => handleCardDetailChange("cvv", e.target.value)}
+                    placeholder="123"
+                  />
+                </div>
+              </div>
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <div className="flex gap-2">
+                <Button className="flex-1" onClick={handleCardConfirm}>
+                  Confirm
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => {
+                    setCardDialogOpen(false);
+                    setCardDetails({ cardNumber: "", expiry: "", cvv: "" });
+                    setError(null);
+                  }}
+                >
+                  Cancel
+                </Button>
               </div>
             </div>
           </DialogContent>

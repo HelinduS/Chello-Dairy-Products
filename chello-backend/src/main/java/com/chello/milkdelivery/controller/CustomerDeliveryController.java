@@ -23,6 +23,7 @@ public class CustomerDeliveryController {
 
     private final DeliveryService deliveryService;
 
+
     @GetMapping("/deliveries")
     public Map<String, Object> getDeliveries() {
         String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
@@ -41,5 +42,7 @@ public class CustomerDeliveryController {
         String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         deliveryService.cancelDelivery(username);
         return ResponseEntity.ok().build();
+
+
 }
 }

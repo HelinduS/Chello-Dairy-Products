@@ -1,3 +1,4 @@
+
 package com.chello.milkdelivery.service;
 
 import com.chello.milkdelivery.dto.DeliveryUpdateRequest;
@@ -21,14 +22,41 @@ public class DeliveryService {
     private final ProductRepository productRepository;
 
     public Map<String, Object> getDeliveries(String username) {
+        // Fetch deliveries with exact deliveryDay match
         List<CustomerProduct> wednesdayDeliveries = customerProductRepository.findDeliveriesByDay(username, "Wednesday");
         List<CustomerProduct> sundayDeliveries = customerProductRepository.findDeliveriesByDay(username, "Sunday");
 
+        // Filter out Wednesday,Sunday deliveries
+        wednesdayDeliveries = wednesdayDeliveries.stream()
+                .filter(cp -> cp.getDeliveryDay().equals("Wednesday"))
+                .toList();
+        sundayDeliveries = sundayDeliveries.stream()
+                .filter(cp -> cp.getDeliveryDay().equals("Sunday"))
+                .toList();
+
+        // Split by payment status
+        List<CustomerProduct> wednesdayPayed = wednesdayDeliveries.stream()
+                .filter(cp -> "payed".equals(cp.getPaymentStatus()))
+                .toList();
+        List<CustomerProduct> wednesdayPending = wednesdayDeliveries.stream()
+                .filter(cp -> "pending".equals(cp.getPaymentStatus()))
+                .toList();
+        List<CustomerProduct> sundayPayed = sundayDeliveries.stream()
+                .filter(cp -> "payed".equals(cp.getPaymentStatus()))
+                .toList();
+        List<CustomerProduct> sundayPending = sundayDeliveries.stream()
+                .filter(cp -> "pending".equals(cp.getPaymentStatus()))
+                .toList();
+
         Map<String, Object> response = new HashMap<>();
-        response.put("wednesday", processDeliveries(wednesdayDeliveries));
-        response.put("sunday", processDeliveries(sundayDeliveries));
-        response.put("wednesdayTotal", calculateTotal(wednesdayDeliveries));
-        response.put("sundayTotal", calculateTotal(sundayDeliveries));
+        response.put("wednesdayPayed", processDeliveries(wednesdayPayed));
+        response.put("wednesdayPending", processDeliveries(wednesdayPending));
+        response.put("sundayPayed", processDeliveries(sundayPayed));
+        response.put("sundayPending", processDeliveries(sundayPending));
+        response.put("wednesdayPayedTotal", calculateTotal(wednesdayPayed));
+        response.put("wednesdayPendingTotal", calculateTotal(wednesdayPending));
+        response.put("sundayPayedTotal", calculateTotal(sundayPayed));
+        response.put("sundayPendingTotal", calculateTotal(sundayPending));
 
         return response;
     }
@@ -58,7 +86,14 @@ public class DeliveryService {
     }
 
     public void updateDelivery(String username, DeliveryUpdateRequest request) {
-        List<CustomerProduct> deliveries = customerProductRepository.findAllByUsername(username);
+        String deliveryDay = request.getDeliveryDay();
+        if (deliveryDay == null || (!deliveryDay.equals("Wednesday") && !deliveryDay.equals("Sunday"))) {
+            throw new IllegalArgumentException("Invalid delivery day: " + deliveryDay);
+        }
+        List<CustomerProduct> deliveries = customerProductRepository.findDeliveriesByDay(username, deliveryDay);
+        if (deliveries.isEmpty()) {
+            throw new IllegalArgumentException("No deliveries found for " + deliveryDay);
+        }
 
         for (CustomerProduct cp : deliveries) {
             cp.setDeliveryMethod(request.getMethod());
